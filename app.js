@@ -235,7 +235,7 @@ function renderTodos(){
             `;
 
             // 完成
-
+            
             li.querySelector(
             ".check"
         )
@@ -247,6 +247,57 @@ function renderTodos(){
 
                 const newState =
                     !task.done;
+                    if(!task.done){
+
+                    const rect =
+                    li.querySelector(
+                        ".check"
+                    ).getBoundingClientRect();
+
+                    for(let i=0;i<6;i++){
+
+                        const spark =
+                        document.createElement(
+                            "div"
+                        );
+
+                        spark.className =
+                            "spark";
+
+                        spark.style.left =
+                            rect.left + 12 + "px";
+
+                        spark.style.top =
+                            rect.top + 12 + "px";
+
+                        spark.style.setProperty(
+
+                            "--x",
+
+                            (Math.random()*40-20)
+                            +"px"
+
+                        );
+
+                        spark.style.setProperty(
+
+                            "--y",
+
+                            (Math.random()*40-20)
+                            +"px"
+
+                        );
+
+                        document.body.appendChild(
+                            spark
+                        );
+
+                        setTimeout(
+                            ()=>spark.remove(),
+                            500
+                        );
+                    }
+                }
 
                 li.classList.toggle(
                     "done"
@@ -264,25 +315,32 @@ function renderTodos(){
             li.querySelector(
                 ".delete-btn"
             )
-
             .addEventListener(
 
                 "click",
 
                 ()=>{
 
-                    state.today =
-                    state.today.filter(
-
-                        t=>
-
-                        t.id !==
-                        task.id
+                    li.classList.add(
+                        "removing"
                     );
 
-                    saveState();
+                    setTimeout(()=>{
 
-                    renderTodos();
+                        state.today =
+                        state.today.filter(
+
+                            t=>
+
+                            t.id !==
+                            task.id
+                        );
+
+                        saveState();
+
+                        renderTodos();
+
+                    },300);
                 }
             );
 
@@ -317,11 +375,21 @@ function addTask(){
         done:false
     });
 
-    taskInput.value = "";
-
     saveState();
 
     renderTodos();
+
+    const firstItem =
+    document.querySelector(
+        ".todo-item"
+    );
+
+    if(firstItem){
+
+        firstItem.classList.add(
+            "new-item"
+        );
+    }
 }
 
 addBtn.addEventListener(
@@ -622,6 +690,6 @@ loadState();
 
 renderDate();
 
-
+renderTodos();
 
 renderArchive();

@@ -81,7 +81,7 @@ body{
 
     letter-spacing:-1px;
 
-    color:#111;
+    color:#710ce4;
 
     text-shadow:
 
@@ -228,7 +228,7 @@ body{
 
     background:
 
-        #4f7cff;
+        #006b19;
 
     color:white;
 
@@ -716,4 +716,86 @@ body{
         "Segoe UI",
 
         sans-serif;
+}
+
+.todo-item.removing{
+
+    opacity:0;
+
+    transform:
+
+        translateX(30px)
+
+        scale(.95);
+
+    transition:.3s ease;
+}
+
+.todo-item.new-item{
+
+    animation:
+        newTask .35s ease;
+}
+
+@keyframes newTask{
+
+    0%{
+
+        opacity:0;
+
+        transform:
+            translateY(-20px);
+    }
+
+    100%{
+
+        opacity:1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+.spark{
+
+    position:fixed;
+
+    width:8px;
+
+    height:8px;
+
+    border-radius:50%;
+
+    background:#4f7cff;
+
+    pointer-events:none;
+
+    animation:
+        spark .5s ease forwards;
+
+    z-index:9999;
+}
+
+@keyframes spark{
+
+    0%{
+
+        opacity:1;
+
+        transform:
+            translate(0,0)
+            scale(1);
+    }
+
+    100%{
+
+        opacity:0;
+
+        transform:
+            translate(
+                var(--x),
+                var(--y)
+            )
+            scale(0);
+    }
 }
