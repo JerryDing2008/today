@@ -1,0 +1,623 @@
+/* ========================= */
+/* Today V1 */
+/* ========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:
+         "ZCOOL XiaoWei",
+
+        serif;
+
+    background:
+        #f6f7fb;
+
+    color:
+        #1c1c1e;
+
+    min-height:100vh;
+}
+
+/* ========================= */
+/* 页面 */
+/* ========================= */
+
+.page{
+
+    max-width:720px;
+
+    margin:auto;
+
+    padding:
+
+        24px
+        20px
+        80px;
+}
+
+.hidden{
+
+    display:none;
+}
+
+/* ========================= */
+/* Header */
+/* ========================= */
+
+.header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-bottom:18px;
+}
+
+.header h1{
+
+    font-size:40px;
+
+    font-weight:800;
+
+    letter-spacing:-1px;
+}
+
+#menuBtn,
+#backBtn{
+
+    border:none;
+
+    background:none;
+
+    cursor:pointer;
+
+    font-size:28px;
+
+    color:#555;
+
+    transition:.2s;
+}
+
+#menuBtn:hover,
+#backBtn:hover{
+
+    color:#111;
+}
+
+/* ========================= */
+/* 副标题 */
+/* ========================= */
+
+.subtitle{
+
+    color:#666;
+
+    font-size:16px;
+
+    margin-bottom:18px;
+
+    line-height:1.6;
+}
+
+/* ========================= */
+/* 日期 */
+/* ========================= */
+
+.date-label{
+
+    margin-bottom:22px;
+
+    color:#999;
+
+    font-size:14px;
+
+    font-weight:600;
+}
+
+/* ========================= */
+/* Card */
+/* ========================= */
+
+.todo-card{
+
+    background:#fff;
+
+    border-radius:28px;
+
+    padding:24px;
+
+    box-shadow:
+
+        0 10px 40px
+
+        rgba(
+            0,
+            0,
+            0,
+            .05
+        );
+}
+
+/* ========================= */
+/* 添加栏 */
+/* ========================= */
+
+.add-bar{
+
+    display:flex;
+
+    gap:12px;
+
+    margin-bottom:20px;
+}
+
+#taskInput{
+
+    flex:1;
+
+    border:none;
+
+    background:
+
+        #f1f3f7;
+
+    border-radius:16px;
+
+    padding:
+
+        14px
+        16px;
+
+    font-size:15px;
+
+    outline:none;
+}
+
+#addBtn{
+
+    border:none;
+
+    border-radius:16px;
+
+    padding:
+
+        0
+        22px;
+
+    background:
+
+        #4f7cff;
+
+    color:white;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+#addBtn:hover{
+
+    transform:
+        translateY(-1px);
+
+    background:
+        #3a69f9;
+}
+
+/* ========================= */
+/* Todo */
+/* ========================= */
+
+#todoList{
+
+    list-style:none;
+}
+
+.todo-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    padding:
+
+        14px
+        4px;
+
+    border-bottom:
+
+        1px solid
+        #f0f2f5;
+
+    transition:.25s;
+}
+
+.todo-item:last-child{
+
+    border-bottom:none;
+}
+
+/* 圆圈 */
+
+.check{
+
+    width:24px;
+
+    height:24px;
+
+    border-radius:50%;
+
+    border:
+
+        2px solid
+        #cfd5e2;
+
+    cursor:pointer;
+
+    flex-shrink:0;
+
+    position:relative;
+
+    transition:.25s;
+}
+
+/* 完成 */
+
+.todo-item.done .check{
+
+    background:#4f7cff;
+
+    border-color:#4f7cff;
+}
+
+.todo-item.done .check::before{
+
+    opacity:1;
+
+    animation:
+        ringDraw .3s ease;
+}
+
+.todo-item.done .check::after{
+
+    opacity:1;
+
+    transform:
+        scale(1);
+
+    transition-delay:.15s;
+}
+
+.todo-item.done .text{
+
+    color:#a0a6b5;
+
+    text-decoration:
+        line-through;
+
+    transform:
+        translateX(6px);
+
+    transition:.25s;
+}
+
+/* 内容 */
+
+.text{
+
+    flex:1;
+
+    font-size:16px;
+
+    transition:
+
+        color .3s ease,
+
+        transform .3s ease,
+
+        opacity .3s ease;
+}
+/* 删除 */
+
+.delete-btn{
+
+    border:none;
+
+    background:none;
+
+    cursor:pointer;
+
+    opacity:.35;
+
+    transition:.2s;
+
+    font-size:18px;
+}
+
+.delete-btn:hover{
+
+    opacity:1;
+}
+
+/* ========================= */
+/* Archive */
+/* ========================= */
+
+.archive-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+}
+
+.archive-item{
+
+    background:#fff;
+
+    padding:18px;
+
+    border-radius:18px;
+
+    box-shadow:
+
+        0 4px 12px
+
+        rgba(
+            0,
+            0,
+            0,
+            .04
+        );
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.archive-item:hover{
+
+    transform:
+        translateY(-2px);
+}
+
+/* ========================= */
+/* Sidebar */
+/* ========================= */
+
+#overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+
+        rgba(
+            0,
+            0,
+            0,
+            .2
+        );
+
+    z-index:999;
+
+    display:none;
+}
+
+#sidebar{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:260px;
+
+    height:100vh;
+
+    background:white;
+
+    padding:24px;
+
+    transform:
+
+        translateX(
+            -100%
+        );
+
+    transition:.25s;
+
+    box-shadow:
+
+        0 8px 40px
+
+        rgba(
+            0,
+            0,
+            0,
+            .1
+        );
+
+    z-index:1000;
+}
+
+#sidebar.open{
+
+    transform:
+        translateX(0);
+}
+
+#overlay.show{
+
+    display:block;
+}
+
+.sidebar-title{
+
+    font-size:28px;
+
+    font-weight:800;
+
+    margin-bottom:24px;
+}
+
+/* ========================= */
+/* 导航 */
+/* ========================= */
+
+.nav-btn{
+
+    width:100%;
+
+    border:none;
+
+    background:none;
+
+    text-align:left;
+
+    padding:
+
+        14px 16px;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    margin-bottom:8px;
+
+    transition:.2s;
+}
+
+.nav-btn:hover{
+
+    background:
+        #f2f4f8;
+}
+
+.nav-btn.active{
+
+    background:
+        #e8efff;
+
+    color:
+        #4f7cff;
+
+    font-weight:700;
+}
+
+/* ========================= */
+/* 手机 */
+/* ========================= */
+
+@media (max-width:600px){
+
+    .header h1{
+
+        font-size:34px;
+    }
+
+    .todo-card{
+
+        padding:18px;
+    }
+
+    .add-bar{
+
+        flex-direction:column;
+    }
+
+    #addBtn{
+
+        height:48px;
+    }
+}
+
+.check::after{
+
+    content:"✓";
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:white;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    opacity:0;
+
+    transform:
+        scale(.5);
+
+    transition:.25s;
+}
+
+@keyframes ringDraw{
+
+    0%{
+
+        transform:
+            rotate(-90deg)
+            scale(.8);
+    }
+
+    100%{
+
+        transform:
+            rotate(0deg)
+            scale(1);
+    }
+}
+
+.check::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:-2px;
+
+    border-radius:50%;
+
+    border:2px solid
+        #4f7cff;
+
+    opacity:0;
+
+    transform:
+        rotate(-90deg);
+
+    clip-path:
+        inset(
+            50%
+            0
+            0
+            0
+        );
+
+    transition:.3s;
+}
