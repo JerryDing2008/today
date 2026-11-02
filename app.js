@@ -63,6 +63,11 @@ document.getElementById(
     "archivePage"
 );
 
+const detailPanel =
+document.getElementById(
+    "detailPanel"
+);
+
 // -------------------------
 // 状态
 // -------------------------
@@ -367,7 +372,52 @@ function renderTodos(){
                     },300);
                 }
             );
+            li.querySelector(
+                ".text"
+            )
+            .addEventListener(
 
+                "click",
+
+                ()=>{
+
+                    detailPanel.innerHTML = `
+
+                    
+
+                    <div class="detail-title">
+
+                        ${task.text}
+
+                    </div>
+
+                    <textarea
+                        id="detailInput"
+                        class="detail-input"
+                        placeholder="点击添加说明..."
+                    >${task.detail || ""}</textarea>
+
+                    `;
+
+                    const detailInput =
+                    document.getElementById(
+                        "detailInput"
+                    );
+
+                    detailInput.addEventListener(
+
+                        "blur",
+
+                        ()=>{
+
+                            task.detail =
+                                detailInput.value;
+
+                            saveState();
+                        }
+                    );
+                }
+            );
             todoList.appendChild(
                 li
             );
@@ -395,6 +445,8 @@ function addTask(){
             Date.now(),
 
         text,
+
+        detail:"",
 
         done:false
     });
