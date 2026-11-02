@@ -307,7 +307,7 @@ function addTask(){
         return;
     }
 
-    state.today.push({
+    state.today.unshift({
 
         id:
             Date.now(),

@@ -11,15 +11,20 @@
 body{
 
     font-family:
-         "ZCOOL XiaoWei",
+         
+
+        "STZhongsong",
+
+        "华文中宋",
 
         serif;
 
+
     background:
-        #c1f2ff;
+        #ffffd0;
 
     color:
-        #1c1c1e;
+        #2e025a;
 
     min-height:100vh;
 }
@@ -30,15 +35,16 @@ body{
 
 .page{
 
-    max-width:720px;
+    width:min(
+        1200px,
+        92vw
+    );
 
-    margin:auto;
+    margin-left:6vw;
 
-    padding:
+    margin-right:auto;
 
-        24px
-        20px
-        80px;
+    padding-top:40px;
 }
 
 .hidden{
@@ -63,11 +69,30 @@ body{
 
 .header h1{
 
-    font-size:40px;
+    font-family:
 
-    font-weight:800;
+        "Segoe UI Black",
+
+        "Segoe UI",
+
+        sans-serif;
+
+    font-size:52px;
 
     letter-spacing:-1px;
+
+    color:#111;
+
+    text-shadow:
+
+        0 2px 8px
+
+        rgba(
+            0,
+            0,
+            0,
+            .06
+        );
 }
 
 #menuBtn,
@@ -100,11 +125,16 @@ body{
 
     color:#666;
 
-    font-size:16px;
+    text-shadow:
 
-    margin-bottom:18px;
+        0 1px 2px
 
-    line-height:1.6;
+        rgba(
+            0,
+            0,
+            0,
+            .04
+        );
 }
 
 /* ========================= */
@@ -130,20 +160,17 @@ body{
 
     background:#fff;
 
-    border-radius:28px;
+    border-radius:40px;
 
     padding:24px;
 
-    box-shadow:
+    display:flex;
 
-        0 10px 40px
+    flex-direction:column;
 
-        rgba(
-            0,
-            0,
-            0,
-            .05
-        );
+    gap:12px;
+
+    min-height:70vh;
 }
 
 /* ========================= */
@@ -156,7 +183,14 @@ body{
 
     gap:12px;
 
-    margin-bottom:20px;
+    margin-top:24px;
+
+    padding-top:20px;
+
+    border-top:
+
+        1px solid
+        #f0f2f5;
 }
 
 #taskInput{
@@ -220,7 +254,9 @@ body{
 
 #todoList{
 
-    list-style:none;
+    min-height:250px;
+
+    flex:1;
 }
 
 .todo-item{
@@ -317,17 +353,18 @@ body{
 
 .text{
 
-    flex:1;
+    transition:.3s;
 
-    font-size:16px;
+    text-shadow:
 
-    transition:
+        0 1px 1px
 
-        color .3s ease,
-
-        transform .3s ease,
-
-        opacity .3s ease;
+        rgba(
+            0,
+            0,
+            0,
+            .03
+        );
 }
 /* 删除 */
 
@@ -422,35 +459,25 @@ body{
 
     position:fixed;
 
-    top:0;
-    left:0;
+    top:20px;
 
-    width:260px;
+    left:20px;
 
-    height:100vh;
+    width:280px;
+
+    height:calc(100vh - 40px);
 
     background:white;
 
-    padding:24px;
-
-    transform:
-
-        translateX(
-            -100%
-        );
-
-    transition:.25s;
+    border-radius:28px;
 
     box-shadow:
+        0 20px 50px
+        rgba(0,0,0,.12);
 
-        0 8px 40px
+    transform:translateX(-120%);
 
-        rgba(
-            0,
-            0,
-            0,
-            .1
-        );
+    transition:.25s ease;
 
     z-index:1000;
 }
@@ -472,6 +499,10 @@ body{
 
     font-weight:800;
 
+    margin-top:20px;
+
+    margin-left:16px;
+
     margin-bottom:24px;
 }
 
@@ -481,7 +512,7 @@ body{
 
 .nav-btn{
 
-    width:100%;
+    width:80%;
 
     border:none;
 
@@ -502,6 +533,22 @@ body{
     margin-bottom:8px;
 
     transition:.2s;
+
+    margin:0 auto 12px;
+
+    display:block;
+
+    text-align:center;
+
+    font-family:
+
+        "Segoe UI Black",
+
+        "Segoe UI",
+
+        sans-serif;
+
+    font-weight:900;
 }
 
 .nav-btn:hover{
@@ -620,4 +667,53 @@ body{
         );
 
     transition:.3s;
+}
+
+#menuBtn{
+
+    width:56px;
+
+    height:56px;
+
+    border:none;
+    border-radius:18px;
+
+    background:rgb(181, 219, 255);
+
+    cursor:pointer;
+
+    font-size:32px;
+
+    transition:.2s;
+
+    box-shadow:
+
+        0 4px 12px
+
+        rgba(
+            0,
+            0,
+            0,
+            .05
+        );
+
+    transition:
+        transform .2s ease;
+}
+
+#menuBtn:hover{
+
+    transform:
+        scale(1.08);
+}
+
+#sidebar{
+
+    font-family:
+
+        "Segoe UI Black",
+
+        "Segoe UI",
+
+        sans-serif;
 }
