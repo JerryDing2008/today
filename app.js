@@ -264,6 +264,30 @@ function renderTodos(){
                         spark.className =
                             "spark";
 
+                        const colors = [
+
+                            "#4f7cff",
+
+                            "#ffb800",
+
+                            "#ff6b6b",
+
+                            "#7ed957",
+
+                            "#ff87d7",
+
+                            "#8a7dff"
+                        ];
+
+                        spark.style.background =
+
+                            colors[
+                                Math.floor(
+                                    Math.random() *
+                                    colors.length
+                                )
+                            ];
+
                         spark.style.left =
                             rect.left + 12 + "px";
 
@@ -274,7 +298,7 @@ function renderTodos(){
 
                             "--x",
 
-                            (Math.random()*40-20)
+                            (Math.random()*100-50)
                             +"px"
 
                         );
@@ -283,7 +307,7 @@ function renderTodos(){
 
                             "--y",
 
-                            (Math.random()*40-20)
+                            (Math.random()*100-50)
                             +"px"
 
                         );
@@ -374,6 +398,8 @@ function addTask(){
 
         done:false
     });
+
+    taskInput.value = "";
 
     saveState();
 

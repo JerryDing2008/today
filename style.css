@@ -757,21 +757,18 @@ body{
 }
 
 .spark{
-
     position:fixed;
 
-    width:8px;
+    width:14px;
 
-    height:8px;
+    height:14px;
 
     border-radius:50%;
-
-    background:#4f7cff;
 
     pointer-events:none;
 
     animation:
-        spark .5s ease forwards;
+        spark .7s ease forwards;
 
     z-index:9999;
 }
