@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Today</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- 菜单 -->
+
+    <div
+        id="overlay">
+
+    </div>
+
+    <aside
+        id="sidebar">
+
+        <div class="sidebar-title">
+
+            Today
+
+        </div>
+
+        <button
+            class="nav-btn active"
+            data-page="today">
+
+            Today
+
+        </button>
+
+        <button
+            class="nav-btn"
+            data-page="archive">
+
+            Archive
+
+        </button>
+
+    </aside>
+
+    <!-- Today 页面 -->
+
+    <main
+        id="todayPage"
+        class="page">
+
+        <header
+            class="header">
+
+            <button
+                id="menuBtn">
+
+                ☰
+
+            </button>
+
+            <h1>
+
+                Today
+
+            </h1>
+
+        </header>
+
+        <p
+            class="subtitle">
+
+            今天的事情，今天完成。
+
+        </p>
+
+        <div
+            id="dateLabel"
+            class="date-label">
+
+        </div>
+
+        <div
+            class="todo-card">
+
+            <div
+                class="add-bar">
+
+                <input
+                    id="taskInput"
+                    type="text"
+                    maxlength="100"
+                    placeholder="添加一项今天要完成的事情">
+
+                <button
+                    id="addBtn">
+
+                    添加
+
+                </button>
+
+            </div>
+
+            <ul
+                id="todoList">
+
+            </ul>
+
+        </div>
+
+    </main>
+
+    <!-- Archive 页面 -->
+
+    <main
+        id="archivePage"
+        class="page hidden">
+
+        <header
+            class="header">
+
+            <button
+                id="backBtn">
+
+                ←
+
+            </button>
+
+            <h1>
+
+                Archive
+
+            </h1>
+
+        </header>
+
+        <p
+            class="subtitle">
+
+            已归档的过去。
+
+        </p>
+
+        <div
+            id="archiveList"
+            class="archive-list">
+
+        </div>
+
+    </main>
+
+    <script
+        src="app.js">
+
+    </script>
+
+</body>
+
+</html>
