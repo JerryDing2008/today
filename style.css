@@ -865,19 +865,15 @@ body{
 
 .detail-title{
 
-    font-size:20px;
+    font-size:18px;
 
-    color:#444;
+    font-weight:600;
 
-    margin-bottom:18px;
+    color:#555;
 
-    font-family:
+    margin-bottom:20px;
 
-        "Segoe UI Black",
-
-        "Segoe UI",
-
-        sans-serif;
+    line-height:1.4;
 }
 
 .detail-content{
@@ -900,13 +896,73 @@ body{
 
     background:transparent;
 
-    font-size:15px;
+    font-size:14px;
 
-    color:#666;
+    color:#888;
 
     outline:none;
 
     line-height:1.8;
 
     font-family:inherit;
+}
+
+.empty-title{
+
+    font-size:28px;
+
+    font-family:
+
+        "Segoe UI Black",
+
+        "Segoe UI",
+
+        sans-serif;
+
+    color:#555;
+
+    margin-bottom:20px;
+}
+
+.empty-subtitle{
+
+    font-size:18px;
+
+    color:#777;
+
+    margin-bottom:12px;
+}
+
+.empty-desc{
+
+    font-size:14px;
+
+    color:#aaa;
+
+    line-height:1.8;
+}
+
+.detail-content-fade{
+
+    animation:
+        detailContentFade .25s ease;
+}
+
+@keyframes detailContentFade{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(8px);
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+            translateY(0);
+    }
 }

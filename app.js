@@ -383,21 +383,32 @@ function renderTodos(){
 
                     detailPanel.innerHTML = `
 
-                    
+                    <div class="detail-content-fade">
 
-                    <div class="detail-title">
+                        <div class="detail-title">
 
-                        ${task.text}
+                            ${task.text}
+
+                        </div>
+
+                        <textarea
+                            id="detailInput"
+                            class="detail-input"
+                            placeholder="点击添加说明..."
+                        >${task.detail || ""}</textarea>
 
                     </div>
 
-                    <textarea
-                        id="detailInput"
-                        class="detail-input"
-                        placeholder="点击添加说明..."
-                    >${task.detail || ""}</textarea>
-
                     `;
+                    detailPanel.classList.remove(
+                        "detail-fade"
+                    );
+
+                    void detailPanel.offsetWidth;
+
+                    detailPanel.classList.add(
+                        "detail-fade"
+                    );
 
                     const detailInput =
                     document.getElementById(
