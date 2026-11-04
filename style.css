@@ -1012,3 +1012,53 @@ body{
     transform:
         scale(1.05);
 }
+
+.mode-switch{
+
+    animation:
+        modeSwitch .25s ease;
+}
+
+@keyframes modeSwitch{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(10px);
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+.todo-item{
+
+    animation:
+        fadeInTodo .25s ease;
+}
+
+@keyframes fadeInTodo{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(8px);
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+            translateY(0);
+    }
+}

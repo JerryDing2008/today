@@ -489,7 +489,17 @@ function renderTodos(){
                             saveState();
                         }
                     );
+                    todoList.classList.remove(
+                        "mode-switch"
+                    );
+
+                    void todoList.offsetWidth;
+
                     renderTodos();
+
+                    todoList.classList.add(
+                        "mode-switch"
+                    );
 
                 }
             );
