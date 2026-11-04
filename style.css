@@ -369,7 +369,7 @@ body{
 
     cursor:grab;
 
-    font-size:21px;
+    font-size:24px;
 
     font-weight:600;
 
@@ -975,4 +975,40 @@ body{
 
     box-shadow:
         0 6px 18px rgba(79,124,255,.12);
+}
+
+#somedayBtn{
+
+    width:56px;
+
+    height:56px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:white;
+
+    cursor:pointer;
+
+    font-size:26px;
+
+    transition:.2s;
+
+    box-shadow:
+
+        0 4px 12px
+
+        rgba(
+            0,
+            0,
+            0,
+            .05
+        );
+}
+
+#somedayBtn:hover{
+
+    transform:
+        scale(1.05);
 }

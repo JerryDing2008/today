@@ -73,10 +73,17 @@ document.getElementById(
 // -------------------------
 let selectedTaskId = null;
 let state = {
+
     currentDate: "",
+
     today: [],
+
+    someday: [],
+
     archive: {}
 };
+let currentMode =
+    "today";
 
 // -------------------------
 // 日期
@@ -124,6 +131,13 @@ function loadState(){
         state =
             JSON.parse(raw);
 
+        if(!state.someday){
+
+            state.someday = [];
+
+            saveState();
+        }
+
     }else{
 
         state = {
@@ -132,6 +146,8 @@ function loadState(){
                 getTodayString(),
 
             today: [],
+
+            someday: [],
 
             archive: {}
         };
@@ -198,7 +214,16 @@ function renderTodos(){
 
     todoList.innerHTML = "";
 
-    state.today.forEach(
+        const tasks =
+
+        currentMode ===
+        "today"
+
+        ? state.today
+
+        : state.someday;
+
+    tasks.forEach(
 
         task=>{
 
@@ -365,14 +390,39 @@ function renderTodos(){
 
                     setTimeout(()=>{
 
-                        state.today =
-                        state.today.filter(
+                        const target =
 
-                            t=>
+                            currentMode ===
+                            "today"
 
-                            t.id !==
-                            task.id
-                        );
+                            ? state.today
+
+                            : state.someday;
+
+                        const updated =
+
+                            target.filter(
+
+                                t=>
+
+                                t.id !==
+                                task.id
+                            );
+
+                        if(
+
+                            currentMode ===
+                            "today"
+                        ){
+
+                            state.today =
+                                updated;
+
+                        }else{
+
+                            state.someday =
+                                updated;
+                        }
 
                         saveState();
 
@@ -464,7 +514,16 @@ function addTask(){
         return;
     }
 
-    state.today.unshift({
+    const target =
+
+        currentMode ===
+        "today"
+
+        ? state.today
+
+        : state.someday;
+
+    target.unshift({
 
         id:
             Date.now(),
@@ -501,6 +560,46 @@ addBtn.addEventListener(
 
     addTask
 );
+
+const somedayBtn =
+document.getElementById(
+    "somedayBtn"
+);
+
+const pageTitle =
+document.getElementById(
+    "pageTitle"
+);
+
+somedayBtn.addEventListener(
+
+    "click",
+
+    ()=>{
+
+        if(
+            currentMode ===
+            "today"
+        ){
+
+            currentMode =
+                "someday";
+
+            pageTitle.textContent =
+                "Someday";
+
+        }else{
+
+            currentMode =
+                "today";
+
+            pageTitle.textContent =
+                "Today";
+        }
+
+        renderTodos();
+    }
+);  
 
 taskInput.addEventListener(
 
