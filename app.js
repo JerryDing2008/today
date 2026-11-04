@@ -71,7 +71,7 @@ document.getElementById(
 // -------------------------
 // 状态
 // -------------------------
-
+let selectedTaskId = null;
 let state = {
     currentDate: "",
     today: [],
@@ -214,6 +214,15 @@ function renderTodos(){
 
                 li.classList.add(
                     "done"
+                );
+            }
+            if(
+                task.id ===
+                selectedTaskId
+            ){
+
+                li.classList.add(
+                    "selected"
                 );
             }
 
@@ -381,6 +390,9 @@ function renderTodos(){
 
                 ()=>{
 
+                    selectedTaskId =
+                        task.id;
+
                     detailPanel.innerHTML = `
 
                     <div class="detail-content-fade">
@@ -427,6 +439,8 @@ function renderTodos(){
                             saveState();
                         }
                     );
+                    renderTodos();
+
                 }
             );
             todoList.appendChild(
