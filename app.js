@@ -597,6 +597,29 @@ somedayBtn.addEventListener(
                 "Today";
         }
 
+        selectedTaskId = null;
+
+        detailPanel.innerHTML = `
+
+        <div class="empty-detail">
+
+            <div class="empty-title">
+
+                ${currentMode === "today"
+                    ? "Today"
+                    : "Someday"}
+
+            </div>
+
+            <div class="empty-subtitle">
+
+                选择一个待办事项
+
+            </div>
+
+        </div>
+
+        `;
         renderTodos();
     }
 );  
