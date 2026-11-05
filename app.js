@@ -580,6 +580,10 @@ function renderTodos(){
 
                     setTimeout(()=>{
 
+                        deleteTodoFromCloud(
+                            task.id
+                        );
+
                         const target =
 
                             currentMode ===
@@ -742,42 +746,62 @@ async function saveTodoToCloud(task){
 
         });
 
-console.log(JSON.stringify(data,null,2));
-console.log(data[0]);
-console.log("ERROR", error);
+    console.log(JSON.stringify(data,null,2));
+    console.log(data[0]);
+    console.log("ERROR", error);
 
-if(data){
+    if(data){
 
-    state.today = data
-        .filter(
-            todo => todo.mode === "today"
-        )
-        .map(
-            todo => ({
-                id: todo.id,
-                text: todo.text,
-                detail: todo.detail || "",
-                done: todo.done
-            })
-        );
+        state.today = data
+            .filter(
+                todo => todo.mode === "today"
+            )
+            .map(
+                todo => ({
+                    id: todo.id,
+                    text: todo.text,
+                    detail: todo.detail || "",
+                    done: todo.done
+                })
+            );
 
-    state.someday = data
-        .filter(
-            todo => todo.mode === "someday"
-        )
-        .map(
-            todo => ({
-                id: todo.id,
-                text: todo.text,
-                detail: todo.detail || "",
-                done: todo.done
-            })
-        );
+        state.someday = data
+            .filter(
+                todo => todo.mode === "someday"
+            )
+            .map(
+                todo => ({
+                    id: todo.id,
+                    text: todo.text,
+                    detail: todo.detail || "",
+                    done: todo.done
+                })
+            );
 
-    renderTodos();
+        renderTodos();
+    }
+
 }
 
+async function deleteTodoFromCloud(id){
+
+    const { error } =
+
+    await sbClient
+
+        .from("todo")
+
+        .delete()
+
+        .eq("id", id);
+
+    console.log(
+        "DELETE ERROR",
+        error
+    );
 }
+
+
 
 async function loadTodosFromCloud(){
 
