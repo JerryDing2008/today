@@ -2,11 +2,16 @@
 // Today V1
 // =========================
 
-const STORAGE_KEY = "today-v1";
+
+
+
+
 
 // -------------------------
 // DOM
 // -------------------------
+
+const STORAGE_KEY = "today-v1";
 
 const taskInput =
 document.getElementById(
@@ -627,29 +632,7 @@ somedayBtn.addEventListener(
             );
         }
 
-        selectedTaskId = null;
-
-        detailPanel.innerHTML = `
-
-        <div class="empty-detail">
-
-            <div class="empty-title">
-
-                ${currentMode === "today"
-                    ? "Today"
-                    : "Someday"}
-
-            </div>
-
-            <div class="empty-subtitle">
-
-                选择一个待办事项
-
-            </div>
-
-        </div>
-
-        `;
+        
          selectedTaskId = null;
 
         detailPanel.innerHTML = `
@@ -660,8 +643,8 @@ somedayBtn.addEventListener(
 
                 ${
                     currentMode === "today"
-                    ? "Someday"
-                    : "Today"
+                    ? "Today"
+                    : "Someday"
                 }
 
             </div>
