@@ -35,16 +35,15 @@ body{
 
 .page{
 
-    width:min(
-        1500px,
-        96vw
-    );
+    width:90vw;
 
     margin-left:6vw;
 
     margin-right:auto;
 
     padding-top:40px;
+
+    position:relative;
 }
 
 .hidden{
@@ -81,7 +80,7 @@ body{
 
     letter-spacing:-1px;
 
-    color:#710ce4;
+    color:#d5b6f8;
 
     text-shadow:
 
@@ -158,7 +157,7 @@ body{
 
 .todo-card{
 
-    flex:2.5;
+    flex:1.8;
 
     background:white;
 
@@ -173,15 +172,8 @@ body{
     flex-direction:column;
 
     box-shadow:
-
         0 12px 40px
-
-        rgba(
-            0,
-            0,
-            0,
-            .05
-        );
+        rgb(11, 1, 91);
 }
 
 /* ========================= */
@@ -224,6 +216,8 @@ body{
     font-size:15px;
 
     outline:none;
+
+    
 }
 
 #addBtn{
@@ -272,6 +266,8 @@ body{
     margin:0;
 
     padding:0;
+
+   
 }
 
 .todo-item{
@@ -831,7 +827,7 @@ body{
 
 
 
-    width:280px;
+    width:240px;
 
     min-height:75vh;
 
@@ -842,15 +838,12 @@ body{
     padding:40px;
 
     box-shadow:
-
         0 12px 40px
+        rgb(11, 1, 91);
 
-        rgba(
-            0,
-            0,
-            0,
-            .05
-        );
+    border:
+        1px solid
+        rgba(255,255,255,.35);
 }
 
 .empty-detail{
@@ -1088,40 +1081,7 @@ body{
     }
 }
 
-#accountBtn{
 
-    margin-left:auto;
-
-    margin-right:16px;
-
-    width:56px;
-
-    height:56px;
-
-    border:none;
-
-    border-radius:18px;
-
-    background:#7ed957;
-
-    width:56px;
-
-    height:56px;
-
-    border:none;
-
-    border-radius:18px;
-
-    background:#7ed957;
-
-    color:white;
-
-    font-size:20px;
-
-    cursor:pointer;
-
-    transition:.2s;
-}
 
 #accountBtn:hover{
 
@@ -1180,4 +1140,137 @@ body{
     background:#f3f4f6;
 
     outline:none;
+}
+
+#accountCard{
+
+    margin-top:auto;
+
+    width:100%;
+
+    height:520px;
+
+    background:white;
+
+    border-radius:32px;
+
+    padding:32px;
+
+    box-sizing:border-box;
+
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+
+    box-shadow:
+        0 12px 40px
+        rgba(0,0,0,.06);
+
+    border:
+        1px solid
+        rgba(255,255,255,.35);
+
+}
+
+#accountBtn{
+
+    width:100%;
+
+    height:72px;
+
+    border:none;
+
+    border-radius:28px;
+
+    background:#06b63f;
+
+    color:white;
+
+    font-size:36px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    font-family:
+        "Segoe UI Black",
+        "Segoe UI",
+        sans-serif;
+}
+
+#accountSection{
+
+    width:260px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:24px;
+}
+
+#accountCard input{
+
+    border:none;
+
+    background:#f3f4f6;
+
+    border-radius:14px;
+
+    padding:14px;
+
+    font-size:16px;
+}
+
+#signupBtn{
+
+    border:none;
+
+    border-radius:14px;
+
+    padding:14px;
+
+    background:#ececec;
+
+    cursor:pointer;
+
+    font-family:
+        "Segoe UI Black",
+        "Segoe UI",
+        sans-serif;
+}
+
+.profile-name{
+
+    font-size:28px;
+
+    font-weight:600;
+
+    margin-bottom:24px;
+}
+
+.profile-bio{
+
+    line-height:1.8;
+
+    color:#666;
+
+    margin-bottom:32px;
+}
+
+#logoutBtn{
+
+    border:none;
+
+    background:#efefef;
+
+    border-radius:16px;
+
+    padding:14px;
+
+    cursor:pointer;
 }

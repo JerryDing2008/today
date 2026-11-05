@@ -27,23 +27,145 @@ console.log(
 async function updateUserUI(){
 
     const {
+        data:{ session }
+    } =
+    await sbClient.auth.getSession();
 
-        data:{
-            session
-        }
+    if(session){
 
-    } = await sbClient.auth.getSession();
+        accountBtn.textContent =
+            "✓";
 
-    if(!session){
+        accountCard.innerHTML = `
 
-        return;
+            <div class="profile-name">
+
+                ${
+                    session.user.email
+                    .split("@")[0]
+                }
+
+            </div>
+
+            <div class="profile-bio">
+
+                Build first.
+                Polish later.
+
+            </div>
+
+            <button
+                id="logoutBtn">
+
+                Logout
+
+            </button>
+
+        `;
+
+        document
+        .getElementById(
+            "logoutBtn"
+        )
+        .addEventListener(
+
+            "click",
+
+            async ()=>{
+
+                await sbClient
+                    .auth
+                    .signOut();
+
+                location.reload();
+
+            }
+
+        );
+
+    }else{
+
+        accountBtn.textContent =
+            "LOGIN";
+
+        accountCard.innerHTML = `
+
+        
+
+            <input
+                id="emailInput"
+                type="email"
+                placeholder="Email">
+
+            <input
+                id="passwordInput"
+                type="password"
+                placeholder="Password">
+
+            <button
+                id="signupBtn">
+
+                Sign Up
+
+            </button>
+
+        `;
+        document
+        .getElementById("signupBtn")
+        .addEventListener(
+
+            "click",
+
+            async ()=>{
+
+                const email =
+                    document
+                    .getElementById(
+                        "emailInput"
+                    )
+                    .value
+                    .trim();
+
+                const password =
+                    document
+                    .getElementById(
+                        "passwordInput"
+                    )
+                    .value
+                    .trim();
+
+                const { error } =
+
+                await sbClient
+                .auth
+                .signUp({
+
+                    email,
+
+                    password
+
+                });
+
+                if(error){
+
+                    alert(
+                        error.message
+                    );
+
+                    return;
+                }
+
+                alert(
+                    "注册成功"
+                );
+
+            }
+
+        );
+
+
     }
 
-    accountBtn.textContent =
-        "✓";
-
-    accountBtn.style.background =
-        "#34c759";
 }
 
 
@@ -157,17 +279,84 @@ accountBtn.addEventListener(
     }
 );
 
-signupBtn.addEventListener(
+// // signupBtn.addEventListener(
+
+//     "click",
+
+//     async ()=>{
+
+//         const email =
+//             emailInput.value.trim();
+
+//         const password =
+//             passwordInput.value.trim();
+
+//         if(
+//             !email ||
+//             !password
+//         ){
+
+//             alert(
+//                 "请输入邮箱和密码"
+//             );
+
+//             return;
+//         }
+
+//         const {
+
+//             data,
+
+//             error
+
+//         } = await sbClient.auth.signUp({
+
+//             email,
+
+//             password
+
+//         });
+
+//         if(error){
+
+//             alert(
+//                 error.message
+//             );
+
+//             return;
+//         }
+
+//         alert(
+//             "注册成功，请检查邮箱验证。"
+//         );
+
+//         console.log(
+//             data
+//         );
+//     }
+// );
+
+accountBtn.addEventListener(
 
     "click",
 
     async ()=>{
 
         const email =
-            emailInput.value.trim();
+            document
+            .getElementById(
+                "emailInput"
+            )
+            .value
+            .trim();
 
         const password =
-            passwordInput.value.trim();
+            document
+            .getElementById(
+                "passwordInput"
+            )
+            .value
+            .trim();
 
         if(
             !email ||
@@ -187,7 +376,11 @@ signupBtn.addEventListener(
 
             error
 
-        } = await sbClient.auth.signUp({
+        }
+        =
+        await sbClient
+        .auth
+        .signInWithPassword({
 
             email,
 
@@ -204,57 +397,10 @@ signupBtn.addEventListener(
             return;
         }
 
-        alert(
-            "注册成功，请检查邮箱验证。"
-        );
+        updateUserUI();
 
-        console.log(
-            data
-        );
     }
-);
 
-loginBtn.addEventListener(
-
-    "click",
-
-    async ()=>{
-
-        const email =
-            emailInput.value.trim();
-
-        const password =
-            passwordInput.value.trim();
-
-        const {
-
-            data,
-
-            error
-
-        } = await sbClient.auth.signInWithPassword({
-
-            email,
-
-            password
-
-        });
-
-        if(error){
-
-            alert(
-                error.message
-            );
-
-            return;
-        }
-
-        alert(
-            "登录成功"
-        );
-
-        console.log(data);
-    }
 );
 
 
