@@ -24,7 +24,27 @@ console.log(
     sbClient
 );
 
+async function updateUserUI(){
 
+    const {
+
+        data:{
+            session
+        }
+
+    } = await sbClient.auth.getSession();
+
+    if(!session){
+
+        return;
+    }
+
+    accountBtn.textContent =
+        "✓";
+
+    accountBtn.style.background =
+        "#34c759";
+}
 
 
 // -------------------------
@@ -136,6 +156,108 @@ accountBtn.addEventListener(
 
     }
 );
+
+signupBtn.addEventListener(
+
+    "click",
+
+    async ()=>{
+
+        const email =
+            emailInput.value.trim();
+
+        const password =
+            passwordInput.value.trim();
+
+        if(
+            !email ||
+            !password
+        ){
+
+            alert(
+                "请输入邮箱和密码"
+            );
+
+            return;
+        }
+
+        const {
+
+            data,
+
+            error
+
+        } = await sbClient.auth.signUp({
+
+            email,
+
+            password
+
+        });
+
+        if(error){
+
+            alert(
+                error.message
+            );
+
+            return;
+        }
+
+        alert(
+            "注册成功，请检查邮箱验证。"
+        );
+
+        console.log(
+            data
+        );
+    }
+);
+
+loginBtn.addEventListener(
+
+    "click",
+
+    async ()=>{
+
+        const email =
+            emailInput.value.trim();
+
+        const password =
+            passwordInput.value.trim();
+
+        const {
+
+            data,
+
+            error
+
+        } = await sbClient.auth.signInWithPassword({
+
+            email,
+
+            password
+
+        });
+
+        if(error){
+
+            alert(
+                error.message
+            );
+
+            return;
+        }
+
+        alert(
+            "登录成功"
+        );
+
+        console.log(data);
+    }
+);
+
+
 // -------------------------
 // 状态
 // -------------------------
@@ -581,6 +703,50 @@ function renderTodos(){
 // -------------------------
 // 添加事项
 // -------------------------
+async function saveTodoToCloud(task){
+
+    console.log("开始上传");
+
+    const {
+        data:{ session }
+    } =
+    await sbClient.auth.getSession();
+
+    console.log(session);
+
+    if(!session){
+
+        return;
+    }
+
+    await sbClient
+
+        .from("todo")
+
+        .insert({
+
+            user_id:
+                session.user.id,
+
+            text:
+                task.text,
+
+            detail:
+                task.detail,
+
+            done:
+                task.done,
+
+            mode:
+                currentMode
+
+        });
+
+console.log("DATA", data);
+console.log("ERROR", error);
+
+}
+
 
 function addTask(){
 
@@ -601,7 +767,7 @@ function addTask(){
 
         : state.someday;
 
-    target.unshift({
+    const newTask = {
 
         id:
             Date.now(),
@@ -611,7 +777,16 @@ function addTask(){
         detail:"",
 
         done:false
-    });
+    };
+
+    target.unshift(
+        newTask
+    );
+
+    saveTodoToCloud(
+        newTask
+    );
+
 
     taskInput.value = "";
 
@@ -1014,6 +1189,8 @@ backBtn.addEventListener(
 // -------------------------
 
 loadState();
+
+updateUserUI();
 
 renderDate();
 
