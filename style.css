@@ -1062,3 +1062,28 @@ body{
             translateY(0);
     }
 }
+
+.title-switch{
+
+    animation:
+        titleSwitch .25s ease;
+}
+
+@keyframes titleSwitch{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(-8px);
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+            translateY(0);
+    }
+}

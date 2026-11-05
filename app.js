@@ -598,6 +598,16 @@ somedayBtn.addEventListener(
             pageTitle.textContent =
                 "Someday";
 
+            pageTitle.classList.remove(
+                "title-switch"
+            );
+
+            void pageTitle.offsetWidth;
+
+            pageTitle.classList.add(
+                "title-switch"
+            );
+
         }else{
 
             currentMode =
@@ -605,6 +615,16 @@ somedayBtn.addEventListener(
 
             pageTitle.textContent =
                 "Today";
+
+            pageTitle.classList.remove(
+                "title-switch"
+            );
+
+            void pageTitle.offsetWidth;
+
+            pageTitle.classList.add(
+                "title-switch"
+            );
         }
 
         selectedTaskId = null;
