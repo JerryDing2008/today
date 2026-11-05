@@ -2,7 +2,27 @@
 // Today V1
 // =========================
 
+console.log(
+    "window.supabase =",
+    window.supabase
+);
 
+const SUPABASE_URL =
+"https://ithkvgyjvrbztmwxhyya.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_VrceITwhVpJksr7-8WTrMQ_J92BhKwQ";
+
+const sbClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+console.log(
+    "Supabase Client Created",
+    sbClient
+);
 
 
 
@@ -12,6 +32,12 @@
 // -------------------------
 
 const STORAGE_KEY = "today-v1";
+
+const accountBtn =
+document.getElementById(
+    "accountBtn"
+);
+
 
 const taskInput =
 document.getElementById(
@@ -73,6 +99,43 @@ document.getElementById(
     "detailPanel"
 );
 
+const authPanel =
+document.getElementById(
+    "authPanel"
+);
+
+const emailInput =
+document.getElementById(
+    "emailInput"
+);
+
+const passwordInput =
+document.getElementById(
+    "passwordInput"
+);
+
+const loginBtn =
+document.getElementById(
+    "loginBtn"
+);
+
+const signupBtn =
+document.getElementById(
+    "signupBtn"
+);
+
+accountBtn.addEventListener(
+
+    "click",
+
+    ()=>{
+
+        authPanel.classList.toggle(
+            "hidden"
+        );
+
+    }
+);
 // -------------------------
 // 状态
 // -------------------------

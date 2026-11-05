@@ -367,7 +367,7 @@ body{
 
 .text{
 
-    cursor:grab;
+    cursor:pointer;
 
     font-size:24px;
 
@@ -1086,4 +1086,98 @@ body{
         transform:
             translateY(0);
     }
+}
+
+#accountBtn{
+
+    margin-left:auto;
+
+    margin-right:16px;
+
+    width:56px;
+
+    height:56px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#7ed957;
+
+    width:56px;
+
+    height:56px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#7ed957;
+
+    color:white;
+
+    font-size:20px;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+#accountBtn:hover{
+
+    transform:scale(1.06);
+}
+
+#authPanel{
+
+    position:absolute;
+
+    top:80px;
+
+    right:0;
+
+    width:260px;
+
+    background:white;
+
+    border-radius:24px;
+
+    padding:20px;
+
+    box-shadow:
+
+        0 12px 40px
+
+        rgba(
+            0,
+            0,
+            0,
+            .08
+        );
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+    z-index:100;
+}
+
+#authPanel.hidden{
+
+    display:none;
+}
+
+#authPanel input{
+
+    border:none;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    background:#f3f4f6;
+
+    outline:none;
 }
