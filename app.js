@@ -742,8 +742,108 @@ async function saveTodoToCloud(task){
 
         });
 
-console.log("DATA", data);
+console.log(JSON.stringify(data,null,2));
+console.log(data[0]);
 console.log("ERROR", error);
+
+if(data){
+
+    state.today = data
+        .filter(
+            todo => todo.mode === "today"
+        )
+        .map(
+            todo => ({
+                id: todo.id,
+                text: todo.text,
+                detail: todo.detail || "",
+                done: todo.done
+            })
+        );
+
+    state.someday = data
+        .filter(
+            todo => todo.mode === "someday"
+        )
+        .map(
+            todo => ({
+                id: todo.id,
+                text: todo.text,
+                detail: todo.detail || "",
+                done: todo.done
+            })
+        );
+
+    renderTodos();
+}
+
+}
+
+async function loadTodosFromCloud(){
+
+    const {
+        data:{ session }
+    } =
+    await sbClient.auth.getSession();
+
+    if(!session){
+
+        return;
+    }
+
+    const { data, error } =
+    await sbClient
+
+        .from("todo")
+
+        .select("*");
+
+    console.log("RAW", data);
+
+    if(data){
+
+        console.log("MODES",
+            data.map(
+                t => t.mode
+            )
+        );
+
+    }
+
+    console.log("TODOS", data);
+    console.log("ERROR", error);
+
+    if(data){
+
+            state.today = data
+                .filter(
+                    todo => todo.mode === "today"
+                )
+                .map(
+                    todo => ({
+                        id: todo.id,
+                        text: todo.text,
+                        detail: todo.detail || "",
+                        done: todo.done
+                    })
+                );
+
+            state.someday = data
+                .filter(
+                    todo => todo.mode === "someday"
+                )
+                .map(
+                    todo => ({
+                        id: todo.id,
+                        text: todo.text,
+                        detail: todo.detail || "",
+                        done: todo.done
+                    })
+                );
+
+        renderTodos();
+
+    }
 
 }
 
@@ -1197,3 +1297,5 @@ renderDate();
 renderTodos();
 
 renderArchive();
+
+loadTodosFromCloud();
