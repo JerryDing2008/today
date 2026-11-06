@@ -706,6 +706,16 @@ function renderTodos(){
                     newState;
 
                 saveState();
+
+                updateTodoInCloud(
+
+                    task.id,
+
+                    {
+                        done: newState
+                    }
+
+                );
             }
         );;
 
@@ -821,13 +831,27 @@ function renderTodos(){
 
                         "blur",
 
-                        ()=>{
+                        async ()=>{
 
+                            console.log(task);
                             task.detail =
                                 detailInput.value;
 
                             saveState();
+
+                            await updateTodoInCloud(
+
+                                task.id,
+
+                                {
+                                    detail:
+                                        task.detail
+                                }
+
+                            );
+
                         }
+
                     );
                     todoList.classList.remove(
                         "mode-switch"
@@ -926,6 +950,43 @@ async function saveTodoToCloud(task){
 
         renderTodos();
     }
+
+}
+
+async function updateTodoInCloud(
+    id,
+    fields
+){
+
+    console.log(
+        "UPDATE",
+        id,
+        fields
+    );
+
+    const { data,error } =
+
+    await sbClient
+
+        .from("todo")
+
+        .update(
+            fields
+        )
+
+        .eq("id", id)
+
+        .select();
+
+    console.log(
+        "UPDATED DATA",
+        data
+    );
+
+    console.log(
+        "UPDATE ERROR",
+        error
+    );
 
 }
 
