@@ -793,6 +793,21 @@ function renderTodos(){
                     selectedTaskId =
                         task.id;
 
+                    document
+                    .querySelectorAll(
+                        ".todo-item"
+                    )
+                    .forEach(
+                        item =>
+                        item.classList.remove(
+                            "selected"
+                        )
+                    );
+
+                    li.classList.add(
+                        "selected"
+                    );
+
                     detailPanel.innerHTML = `
 
                     <div class="detail-content-fade">
@@ -853,17 +868,11 @@ function renderTodos(){
                         }
 
                     );
-                    todoList.classList.remove(
-                        "mode-switch"
-                    );
+                    
 
-                    void todoList.offsetWidth;
+                    
 
-                    renderTodos();
-
-                    todoList.classList.add(
-                        "mode-switch"
-                    );
+                    
 
                 }
             );

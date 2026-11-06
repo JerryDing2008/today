@@ -893,6 +893,8 @@ body{
     border:none;
 
     outline:none;
+
+    resize:none;
 }
 
 .empty-title{
@@ -1178,6 +1180,9 @@ body{
 
 #accountBtn{
 
+    transition:
+        transform 0.25s ease;
+
     width:100%;
 
     height:72px;
@@ -1226,23 +1231,7 @@ body{
     font-size:16px;
 }
 
-#signupBtn{
 
-    border:none;
-
-    border-radius:14px;
-
-    padding:14px;
-
-    background:#ececec;
-
-    cursor:pointer;
-
-    font-family:
-        "Segoe UI Black",
-        "Segoe UI",
-        sans-serif;
-}
 
 .profile-name{
 
@@ -1273,4 +1262,54 @@ body{
     padding:14px;
 
     cursor:pointer;
+
+    transition:
+        transform 0.2s ease;
+
+    font-family:
+    "Segoe UI Black",
+    "Segoe UI",
+    sans-serif;
+        
+}
+
+#logoutBtn:hover{
+
+    transform:
+        
+        scale(1.05);
+
+    
+}
+
+#signupBtn{
+
+    border:none;
+
+    border-radius:14px;
+
+    padding:14px;
+
+    background:#ececec;
+
+    cursor:pointer;
+
+    font-family:
+        "Segoe UI Black",
+        "Segoe UI",
+        sans-serif;
+
+    
+
+    transition:
+        transform 0.2s ease;
+        
+}
+#signupBtn:hover{
+
+    transform:
+        
+        scale(1.05);
+
+    
 }
