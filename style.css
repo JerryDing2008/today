@@ -11,7 +11,10 @@
 body{
 
     font-family:
-         
+
+        "Segoe UI Black",
+
+        "Segoe UI",
 
         "STZhongsong",
 
@@ -43,12 +46,73 @@ body{
 
     padding-top:40px;
 
-    position:relative;
+    position:absolute;
+
+    top:0;
+
+    left:0;
+
+    opacity:1;
+
+    transform:translateX(0);
+
+    transition:
+        opacity .34s ease,
+        transform .48s cubic-bezier(.22, 1, .36, 1);
+
+    z-index:1;
+}
+
+.page.page-pre{
+
+    transition:none;
+}
+
+.page.page-from-right{
+
+    opacity:0;
+
+    transform:translateX(36px);
+}
+
+.page.page-from-left{
+
+    opacity:0;
+
+    transform:translateX(-36px);
+}
+
+.page.page-to-left,
+.page.page-to-right{
+
+    opacity:0;
+
+    pointer-events:none;
+
+    z-index:0;
+}
+
+.page.page-to-left{
+
+    transform:translateX(-36px);
+}
+
+.page.page-to-right{
+
+    transform:translateX(36px);
 }
 
 .hidden{
 
     display:none;
+}
+
+@media (prefers-reduced-motion: reduce){
+
+    .page{
+
+        transition:none;
+    }
 }
 
 /* ========================= */
@@ -213,7 +277,15 @@ body{
         14px
         16px;
 
-    font-size:15px;
+    font-size:16px;
+
+    font-family:
+        "Segoe UI Black",
+        "Segoe UI",
+        "Noto Serif SC",
+        "Songti SC",
+        "STSong",
+        serif;
 
     outline:none;
 
@@ -365,6 +437,12 @@ body{
 
     cursor:pointer;
 
+    flex:1;
+
+    min-width:0;
+
+    overflow-wrap:anywhere;
+
     font-size:24px;
 
     font-weight:600;
@@ -396,6 +474,14 @@ body{
     opacity:.35;
 
     transition:.2s;
+
+    margin-left:auto;
+
+    flex-shrink:0;
+
+    min-width:32px;
+
+    min-height:32px;
 
     font-size:18px;
 }
@@ -446,170 +532,6 @@ body{
 
     transform:
         translateY(-2px);
-}
-
-/* ========================= */
-/* Sidebar */
-/* ========================= */
-
-#overlay{
-
-    position:fixed;
-
-    inset:0;
-
-    background:
-
-        rgba(
-            0,
-            0,
-            0,
-            .2
-        );
-
-    z-index:999;
-
-    display:none;
-}
-
-#sidebar{
-
-    position:fixed;
-
-    top:20px;
-
-    left:20px;
-
-    width:280px;
-
-    height:calc(100vh - 40px);
-
-    background:white;
-
-    border-radius:28px;
-
-    box-shadow:
-        0 20px 50px
-        rgba(0,0,0,.12);
-
-    transform:translateX(-120%);
-
-    transition:.25s ease;
-
-    z-index:1000;
-}
-
-#sidebar.open{
-
-    transform:
-        translateX(0);
-}
-
-#overlay.show{
-
-    display:block;
-}
-
-.sidebar-title{
-
-    font-size:28px;
-
-    font-weight:800;
-
-    margin-top:20px;
-
-    margin-left:16px;
-
-    margin-bottom:24px;
-}
-
-/* ========================= */
-/* 导航 */
-/* ========================= */
-
-.nav-btn{
-
-    width:80%;
-
-    border:none;
-
-    background:none;
-
-    text-align:left;
-
-    padding:
-
-        14px 16px;
-
-    border-radius:14px;
-
-    cursor:pointer;
-
-    font-size:15px;
-
-    margin-bottom:8px;
-
-    transition:.2s;
-
-    margin:0 auto 12px;
-
-    display:block;
-
-    text-align:center;
-
-    font-family:
-
-        "Segoe UI Black",
-
-        "Segoe UI",
-
-        sans-serif;
-
-    font-weight:900;
-}
-
-.nav-btn:hover{
-
-    background:
-        #f2f4f8;
-}
-
-.nav-btn.active{
-
-    background:
-        #e8efff;
-
-    color:
-        #4f7cff;
-
-    font-weight:700;
-}
-
-/* ========================= */
-/* 手机 */
-/* ========================= */
-
-@media (max-width:600px){
-
-    .header h1{
-
-        font-size:34px;
-    }
-
-    .todo-card{
-
-        padding:18px;
-    }
-
-    .add-bar{
-
-        flex-direction:column;
-    }
-
-    #addBtn{
-
-        height:48px;
-    }
 }
 
 .check::after{
@@ -722,17 +644,6 @@ body{
 
     transform:
         scale(1.08);
-}
-
-#sidebar{
-
-    font-family:
-
-        "Segoe UI Black",
-
-        "Segoe UI",
-
-        sans-serif;
 }
 
 .todo-item.removing{
@@ -886,7 +797,15 @@ body{
 
     line-height:1.8;
 
-    font-size:15px;
+    font-size:17px;
+
+    font-family:
+        "Segoe UI Black",
+        "Segoe UI",
+        "Noto Serif SC",
+        "Songti SC",
+        "STSong",
+        serif;
 
     background:transparent;
 
@@ -1233,13 +1152,77 @@ body{
 
 
 
-.profile-name{
+#accountCard .profile-name,
+#accountCard .profile-bio{
+
+    width:100%;
+
+    border:none;
+
+    border-bottom:1px solid transparent;
+
+    background:transparent;
+
+    border-radius:0;
+
+    padding:4px 2px;
+
+    font-family:inherit;
+
+    cursor:text;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease;
+}
+
+#accountCard .profile-name{
 
     font-size:28px;
 
     font-weight:600;
 
-    margin-bottom:24px;
+    margin-bottom:8px;
+
+    color:#0c4369;
+}
+
+#accountCard .profile-bio{
+
+    line-height:1.8;
+
+    color:#666;
+
+    margin-bottom:16px;
+
+    resize:none;
+
+    font-size:16px;
+}
+
+#accountCard .profile-name:hover,
+#accountCard .profile-bio:hover{
+
+    background:#f7f8fa;
+
+    border-bottom-color:#d5d8de;
+}
+
+#accountCard .profile-name:focus,
+#accountCard .profile-bio:focus{
+
+    outline:none;
+
+    background:#f7f8fa;
+
+    border-bottom-color:#06b63f;
+}
+
+.profile-name{
+
+    font-size:28px;
+
+    font-weight:600;
 }
 
 .profile-bio{
@@ -1247,8 +1230,6 @@ body{
     line-height:1.8;
 
     color:#666;
-
-    margin-bottom:32px;
 }
 
 #logoutBtn{
@@ -1312,4 +1293,189 @@ body{
         scale(1.05);
 
     
+}
+
+/* ========================= */
+/* 手机 */
+/* ========================= */
+
+@media (max-width:980px){
+
+    html{
+
+        -webkit-text-size-adjust:100%;
+    }
+
+    body{
+
+        overflow-x:hidden;
+    }
+
+    .page{
+
+        width:auto;
+
+        right:0;
+
+        margin-left:0;
+
+        padding:
+            max(20px, env(safe-area-inset-top))
+            max(16px, env(safe-area-inset-right))
+            max(28px, env(safe-area-inset-bottom))
+            max(16px, env(safe-area-inset-left));
+    }
+
+    .header{
+
+        gap:8px;
+    }
+
+    .header h1{
+
+        flex:1;
+
+        min-width:0;
+
+        font-size:34px;
+
+        letter-spacing:0;
+    }
+
+    #menuBtn,
+    #somedayBtn,
+    #backBtn{
+
+        width:48px;
+
+        height:48px;
+
+        flex-shrink:0;
+    }
+
+    .workspace{
+
+        flex-direction:column;
+
+        gap:16px;
+    }
+
+    .todo-card,
+    #detailPanel,
+    #accountSection,
+    #accountCard{
+
+        width:100%;
+
+        min-height:0;
+    }
+
+    .todo-card{
+
+        border-radius:28px;
+
+        padding:18px 16px 16px;
+    }
+
+    .todo-item{
+
+        gap:10px;
+
+        padding:14px 4px;
+    }
+
+    .text{
+
+        font-size:18px;
+    }
+
+    .delete-btn{
+
+        min-width:44px;
+
+        min-height:44px;
+
+        opacity:.7;
+
+        font-size:22px;
+    }
+
+    .add-bar{
+
+        gap:8px;
+    }
+
+    #taskInput{
+
+        min-width:0;
+
+        font-size:16px;
+    }
+
+    #addBtn{
+
+        flex-shrink:0;
+
+        height:48px;
+
+        padding:0 16px;
+    }
+
+    #detailPanel{
+
+        border-radius:28px;
+
+        padding:22px 18px;
+    }
+
+    .detail-input{
+
+        min-height:140px;
+
+        font-size:16px;
+    }
+
+    .empty-detail{
+
+        margin-top:8px;
+    }
+
+    .empty-title{
+
+        font-size:24px;
+    }
+
+    #accountCard{
+
+        height:auto;
+
+        border-radius:28px;
+
+        padding:22px 18px;
+    }
+
+    #accountBtn{
+
+        height:56px;
+
+        font-size:22px;
+
+        border-radius:22px;
+    }
+
+    #accountCard .profile-name{
+
+        font-size:24px;
+    }
+
+    #accountCard input,
+    #accountCard textarea{
+
+        font-size:16px;
+    }
+
+    .archive-item{
+
+        padding:16px;
+    }
 }

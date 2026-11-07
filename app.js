@@ -53,23 +53,30 @@ async function updateUserUI(){
 
         `;
 
+        const profile =
+            session.user.user_metadata
+            ||
+            {};
+
+        const emailName =
+            session.user.email
+            .split("@")[0];
+
         accountCard.innerHTML = `
 
-            <div class="profile-name">
+            <input
+                id="profileName"
+                class="profile-name"
+                type="text"
+                maxlength="32"
+                aria-label="名字">
 
-                ${
-                    session.user.email
-                    .split("@")[0]
-                }
-
-            </div>
-
-            <div class="profile-bio">
-
-                Build first.
-                Polish later.
-
-            </div>
+            <textarea
+                id="profileMotto"
+                class="profile-bio"
+                maxlength="80"
+                rows="3"
+                aria-label="座右铭"></textarea>
 
             <button
                 id="logoutBtn">
@@ -79,6 +86,122 @@ async function updateUserUI(){
             </button>
 
         `;
+
+        const profileName =
+        document.getElementById(
+            "profileName"
+        );
+
+        const profileMotto =
+        document.getElementById(
+            "profileMotto"
+        );
+
+        profileName.value =
+
+            typeof profile.display_name ===
+            "string"
+            &&
+            profile.display_name.trim()
+
+            ? profile.display_name
+
+            : emailName;
+
+        profileMotto.value =
+
+            typeof profile.motto ===
+            "string"
+
+            ? profile.motto
+
+            : "Build first.\nPolish later.";
+
+        const saveProfile =
+        async ()=>{
+
+            const displayName =
+                profileName.value.trim()
+                ||
+                emailName;
+
+            const motto =
+                profileMotto.value.trim();
+
+            profileName.value =
+                displayName;
+
+            if(
+                displayName ===
+                profile.display_name
+                &&
+                motto ===
+                profile.motto
+            ){
+
+                return;
+            }
+
+            const { error } =
+
+            await sbClient
+            .auth
+            .updateUser({
+
+                data:{
+
+                    display_name:
+                        displayName,
+
+                    motto
+
+                }
+
+            });
+
+            if(error){
+
+                alert(
+                    error.message
+                );
+
+                return;
+            }
+
+            profile.display_name =
+                displayName;
+
+            profile.motto =
+                motto;
+        };
+
+        profileName.addEventListener(
+
+            "keydown",
+
+            event=>{
+
+                if(
+                    event.key ===
+                    "Enter"
+                ){
+
+                    event.preventDefault();
+
+                    profileName.blur();
+                }
+            }
+        );
+
+        profileName.addEventListener(
+            "blur",
+            saveProfile
+        );
+
+        profileMotto.addEventListener(
+            "blur",
+            saveProfile
+        );
 
         document
         .getElementById(
@@ -226,16 +349,6 @@ document.getElementById(
 const menuBtn =
 document.getElementById(
     "menuBtn"
-);
-
-const sidebar =
-document.getElementById(
-    "sidebar"
-);
-
-const overlay =
-document.getElementById(
-    "overlay"
 );
 
 const backBtn =
@@ -1708,28 +1821,124 @@ function openArchiveDay(date){
 }
 
 // -------------------------
-// Sidebar
+// 页面切换
 // -------------------------
 
-function openSidebar(){
+let pageAnimating = false;
 
-    sidebar.classList.add(
-        "open"
+function switchPage(
+    from,
+    to,
+    direction
+){
+
+    if(pageAnimating){
+
+        return;
+    }
+
+    if(
+        direction ===
+        "forward"
+    ){
+
+        renderArchive();
+    }
+
+    const enterClass =
+
+        direction === "forward"
+        ? "page-from-right"
+        : "page-from-left";
+
+    const leaveClass =
+
+        direction === "forward"
+        ? "page-to-left"
+        : "page-to-right";
+
+    pageAnimating = true;
+
+    to.classList.remove(
+        "hidden"
     );
 
-    overlay.classList.add(
-        "show"
+    to.classList.add(
+        "page-pre",
+        enterClass
+    );
+
+    void to.offsetWidth;
+
+    to.classList.remove(
+        "page-pre",
+        enterClass
+    );
+
+    from.classList.add(
+        leaveClass
+    );
+
+    let finished = false;
+
+    const finish = ()=>{
+
+        if(finished){
+
+            return;
+        }
+
+        finished = true;
+
+        from.classList.add(
+            "hidden"
+        );
+
+        from.classList.remove(
+            leaveClass
+        );
+
+        pageAnimating = false;
+    };
+
+    from.addEventListener(
+
+        "transitionend",
+
+        event=>{
+
+            if(
+                event.target === from &&
+                event.propertyName ===
+                "opacity"
+            ){
+
+                finish();
+            }
+        }
+    );
+
+    setTimeout(
+        finish,
+        620
     );
 }
 
-function closeSidebar(){
+function showArchive(){
 
-    sidebar.classList.remove(
-        "open"
+    switchPage(
+        todayPage,
+        archivePage,
+        "forward"
     );
+}
 
-    overlay.classList.remove(
-        "show"
+function showToday(){
+
+    switchPage(
+        archivePage,
+        todayPage,
+        "back"
     );
 }
 
@@ -1737,109 +1946,14 @@ menuBtn.addEventListener(
 
     "click",
 
-    openSidebar
+    showArchive
 );
-
-overlay.addEventListener(
-
-    "click",
-
-    closeSidebar
-);
-
-// -------------------------
-// 页面切换
-// -------------------------
-
-document
-.querySelectorAll(
-    ".nav-btn"
-)
-.forEach(
-
-btn=>{
-
-    btn.addEventListener(
-
-        "click",
-
-        ()=>{
-
-            const page =
-                btn.dataset.page;
-
-            document
-            .querySelectorAll(
-                ".nav-btn"
-            )
-            .forEach(
-
-                b=>
-
-                b.classList.remove(
-                    "active"
-                )
-            );
-
-            btn.classList.add(
-                "active"
-            );
-
-            if(
-                page ===
-                "today"
-            ){
-
-                archivePage
-                .classList.add(
-                    "hidden"
-                );
-
-                todayPage
-                .classList.remove(
-                    "hidden"
-                );
-            }
-
-            if(
-                page ===
-                "archive"
-            ){
-
-                todayPage
-                .classList.add(
-                    "hidden"
-                );
-
-                archivePage
-                .classList.remove(
-                    "hidden"
-                );
-
-                renderArchive();
-            }
-
-            closeSidebar();
-        }
-    );
-});
 
 backBtn.addEventListener(
 
     "click",
 
-    ()=>{
-
-        archivePage
-        .classList.add(
-            "hidden"
-        );
-
-        todayPage
-        .classList.remove(
-            "hidden"
-        );
-    }
+    showToday
 );
 
 // -------------------------
