@@ -111,11 +111,9 @@ Archive  → 过去
 
 ### Next
 
-- [ ] Cloud Archive
-- [ ] Mobile Layout Optimization
 - [ ] Garden Decorations
 - [ ] More SVG Icons
-- [ ] App Store Version
+
 
 ---
 
