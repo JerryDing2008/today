@@ -15,21 +15,92 @@ const SUPABASE_KEY =
 
 const sbClient =
 window.supabase.createClient(
+
     SUPABASE_URL,
-    SUPABASE_KEY
+
+    SUPABASE_KEY,
+
+    {
+
+        auth:{
+
+            persistSession: true,
+
+            autoRefreshToken: true,
+
+            detectSessionInUrl: true,
+
+            storage:
+                window.localStorage,
+
+            lock: async (
+                _name,
+                _acquireTimeout,
+                fn
+            )=>{
+
+                return await fn();
+            }
+        }
+    }
 );
+
+let renderedUserId;
 
 console.log(
     "Supabase Client Created",
     sbClient
 );
 
-async function updateUserUI(){
+async function updateUserUI(
+    knownSession
+){
 
-    const {
-        data:{ session }
-    } =
-    await sbClient.auth.getSession();
+    let session =
+        knownSession;
+
+    if(
+        knownSession ===
+        undefined
+    ){
+
+        const result =
+
+        await sbClient
+        .auth
+        .getSession();
+
+        session =
+            result.data.session;
+    }
+
+    if(
+        session &&
+        renderedUserId ===
+        session.user.id &&
+        document.getElementById(
+            "logoutBtn"
+        )
+    ){
+
+        return;
+    }
+
+    if(
+        !session &&
+        renderedUserId === null &&
+        document.getElementById(
+            "signupBtn"
+        )
+    ){
+
+        return;
+    }
+
+    renderedUserId =
+        session
+        ? session.user.id
+        : null;
 
     if(session){
 
@@ -1084,17 +1155,16 @@ function renderTodos(){
 
                     <div class="detail-content-fade">
 
-                        <div class="detail-title">
-
-                            ${task.text}
-
-                        </div>
+                        <textarea
+                            id="titleInput"
+                            class="detail-title"
+                            maxlength="200"
+                            aria-label="待办内容"></textarea>
 
                         <textarea
                             id="detailInput"
                             class="detail-input"
-                            placeholder="点击添加说明..."
-                        >${task.detail || ""}</textarea>
+                            placeholder="点击添加说明..."></textarea>
 
                     </div>
 
@@ -1109,9 +1179,90 @@ function renderTodos(){
                         "detail-fade"
                     );
 
+                    const titleInput =
+                    document.getElementById(
+                        "titleInput"
+                    );
+
                     const detailInput =
                     document.getElementById(
                         "detailInput"
+                    );
+
+                    const textNode =
+                    li.querySelector(
+                        ".text"
+                    );
+
+                    titleInput.value =
+                        task.text;
+
+                    detailInput.value =
+                        task.detail || "";
+
+                    const fitTitle = ()=>{
+
+                        titleInput.style.height =
+                            "auto";
+
+                        titleInput.style.height =
+                            titleInput.scrollHeight
+                            + "px";
+                    };
+
+                    fitTitle();
+
+                    titleInput.addEventListener(
+                        "input",
+                        fitTitle
+                    );
+
+                    titleInput.addEventListener(
+
+                        "blur",
+
+                        async ()=>{
+
+                            const next =
+                                titleInput.value
+                                .trim();
+
+                            if(!next){
+
+                                titleInput.value =
+                                    task.text;
+
+                                fitTitle();
+
+                                return;
+                            }
+
+                            if(
+                                next ===
+                                task.text
+                            ){
+
+                                return;
+                            }
+
+                            task.text =
+                                next;
+
+                            textNode.textContent =
+                                next;
+
+                            saveState();
+
+                            await updateTodoInCloud(
+
+                                task.id,
+
+                                {
+                                    text: next
+                                }
+
+                            );
+                        }
                     );
 
                     detailInput.addEventListener(
@@ -1963,6 +2114,21 @@ backBtn.addEventListener(
 loadState();
 
 updateUserUI();
+
+sbClient.auth.onAuthStateChange(
+
+    (event, session)=>{
+
+        if(
+            event === "TOKEN_REFRESHED"
+        ){
+
+            return;
+        }
+
+        updateUserUI(session);
+    }
+);
 
 renderDate();
 
