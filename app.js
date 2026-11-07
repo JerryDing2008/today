@@ -442,14 +442,52 @@ let currentMode =
 // 日期
 // -------------------------
 
+function formatLocalDate(date){
+
+    const month =
+        String(date.getMonth() + 1)
+        .padStart(2, "0");
+
+    const day =
+        String(date.getDate())
+        .padStart(2, "0");
+
+    return date.getFullYear()
+        + "-"
+        + month
+        + "-"
+        + day;
+}
+
 function getTodayString(){
 
-    const now =
-        new Date();
+    return formatLocalDate(
+        new Date()
+    );
+}
 
-    return now
-        .toISOString()
-        .split("T")[0];
+function localDateKey(value){
+
+    if(!value){
+
+        return null;
+    }
+
+    const date =
+        new Date(value);
+
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
+
+        return null;
+    }
+
+    return formatLocalDate(
+        date
+    );
 }
 
 // -------------------------
@@ -515,38 +553,142 @@ function loadState(){
 // 跨天归档
 // -------------------------
 
+function showEmptyDetail(){
+
+    selectedTaskId = null;
+
+    const title =
+
+        currentMode === "someday"
+        ? "Someday"
+        : "Today";
+
+    detailPanel.innerHTML = `
+
+        <div class="empty-detail">
+
+            <div class="empty-title">
+
+                ${title}
+
+            </div>
+
+            <div class="empty-subtitle">
+
+                选择一个待办事项
+
+            </div>
+
+            <div class="empty-desc">
+
+                在这里查看详细说明<br>
+                并记录一些想法。
+
+            </div>
+
+        </div>
+
+    `;
+}
+
 function checkDateChange(){
 
     const today =
         getTodayString();
 
     if(
-        state.currentDate !==
+        state.currentDate ===
         today
     ){
 
-        if(
-            state.today.length
-        ){
-
-            state.archive[
-                state.currentDate
-            ] =
-
-            JSON.parse(
-                JSON.stringify(
-                    state.today
-                )
-            );
-        }
-
-        state.currentDate =
-            today;
-
-        state.today = [];
-
-        saveState();
+        return;
     }
+
+    const previousToday =
+        state.today.slice();
+
+    if(
+        previousToday.length
+    ){
+
+        state.archive[
+            state.currentDate
+        ] =
+
+        JSON.parse(
+            JSON.stringify(
+                previousToday
+            )
+        );
+    }
+
+    const selectionCleared =
+        previousToday.some(
+
+            task =>
+            task.id ===
+            selectedTaskId
+        );
+
+    state.currentDate =
+        today;
+
+    state.today = [];
+
+    saveState();
+
+    if(!dateLabel){
+
+        return;
+    }
+
+    renderDate();
+
+    renderTodos();
+
+    renderArchive();
+
+    if(selectionCleared){
+
+        showEmptyDetail();
+    }
+
+    loadTodosFromCloud();
+}
+
+function scheduleNextDayReset(){
+
+    const now =
+        new Date();
+
+    const nextMidnight =
+        new Date(
+
+            now.getFullYear(),
+
+            now.getMonth(),
+
+            now.getDate() + 1,
+
+            0,
+
+            0,
+
+            1
+        );
+
+    setTimeout(
+
+        ()=>{
+
+            checkDateChange();
+
+            scheduleNextDayReset();
+
+        },
+
+        nextMidnight - now
+    );
 }
 
 // -------------------------
@@ -919,63 +1061,56 @@ async function saveTodoToCloud(task){
         return;
     }
 
+    const row = {
+
+        user_id:
+            session.user.id,
+
+        text:
+            task.text,
+
+        detail:
+            task.detail,
+
+        done:
+            task.done,
+
+        mode:
+            currentMode,
+
+        day:
+            getTodayString()
+    };
+
+    let { error } =
+
     await sbClient
 
         .from("todo")
 
-        .insert({
+        .insert(row);
 
-            user_id:
-                session.user.id,
+    if(
+        error &&
+        String(error.message)
+        .includes("day")
+    ){
 
-            text:
-                task.text,
+        delete row.day;
 
-            detail:
-                task.detail,
+        ({ error } =
 
-            done:
-                task.done,
+        await sbClient
 
-            mode:
-                currentMode
+            .from("todo")
 
-        });
-
-    console.log(JSON.stringify(data,null,2));
-    console.log(data[0]);
-    console.log("ERROR", error);
-
-    if(data){
-
-        state.today = data
-            .filter(
-                todo => todo.mode === "today"
-            )
-            .map(
-                todo => ({
-                    id: todo.id,
-                    text: todo.text,
-                    detail: todo.detail || "",
-                    done: todo.done
-                })
-            );
-
-        state.someday = data
-            .filter(
-                todo => todo.mode === "someday"
-            )
-            .map(
-                todo => ({
-                    id: todo.id,
-                    text: todo.text,
-                    detail: todo.detail || "",
-                    done: todo.done
-                })
-            );
-
-        renderTodos();
+            .insert(row));
     }
+
+    console.log(
+        "ERROR",
+        error
+    );
 
 }
 
@@ -1036,6 +1171,78 @@ async function deleteTodoFromCloud(id){
 
 
 
+function cloudTodoDay(todo){
+
+    return todo.day
+        ||
+        localDateKey(
+            todo.created_at
+        );
+}
+
+function isPastTodayTodo(
+    todo,
+    todayKey
+){
+
+    if(
+        todo.mode ===
+        "someday"
+    ){
+
+        return false;
+    }
+
+    const day =
+        cloudTodoDay(todo);
+
+    return Boolean(
+        day &&
+        day < todayKey
+    );
+}
+
+async function archivePastTodayInCloud(
+    staleIds
+){
+
+    if(!staleIds.length){
+
+        return;
+    }
+
+    const updated =
+
+    await sbClient
+
+        .from("todo")
+
+        .update({
+
+            mode: "archive"
+
+        })
+
+        .in(
+            "id",
+            staleIds
+        );
+
+    if(updated.error){
+
+        await sbClient
+
+            .from("todo")
+
+            .delete()
+
+            .in(
+                "id",
+                staleIds
+            );
+    }
+}
+
 async function loadTodosFromCloud(){
 
     const {
@@ -1072,33 +1279,127 @@ async function loadTodosFromCloud(){
 
     if(data){
 
-            state.today = data
-                .filter(
-                    todo => todo.mode === "today"
-                )
-                .map(
-                    todo => ({
-                        id: todo.id,
-                        text: todo.text,
-                        detail: todo.detail || "",
-                        done: todo.done
-                    })
-                );
+            const todayKey =
+                getTodayString();
 
-            state.someday = data
-                .filter(
-                    todo => todo.mode === "someday"
-                )
-                .map(
-                    todo => ({
+            const todayTasks = [];
+
+            const somedayTasks = [];
+
+            const staleIds = [];
+
+            data.forEach(
+
+                todo => {
+
+                    const task = {
+
                         id: todo.id,
+
                         text: todo.text,
+
                         detail: todo.detail || "",
+
                         done: todo.done
-                    })
-                );
+                    };
+
+                    if(
+                        todo.mode ===
+                        "someday"
+                    ){
+
+                        somedayTasks.push(
+                            task
+                        );
+
+                        return;
+                    }
+
+                    const past =
+
+                        todo.mode ===
+                        "archive"
+                        ||
+                        isPastTodayTodo(
+                            todo,
+                            todayKey
+                        );
+
+                    if(past){
+
+                        const day =
+
+                            cloudTodoDay(
+                                todo
+                            )
+                            ||
+                            todayKey;
+
+                        if(
+                            !state.archive[day]
+                        ){
+
+                            state.archive[day] =
+                                [];
+                        }
+
+                        const already =
+
+                            state.archive[day]
+                            .some(
+
+                                item =>
+
+                                item.id ===
+                                task.id
+                                ||
+                                item.text ===
+                                task.text
+                            );
+
+                        if(!already){
+
+                            state.archive[day]
+                            .push(task);
+                        }
+
+                        if(
+                            todo.mode ===
+                            "today"
+                        ){
+
+                            staleIds.push(
+                                todo.id
+                            );
+                        }
+
+                        return;
+                    }
+
+                    todayTasks.push(
+                        task
+                    );
+                }
+            );
+
+            await archivePastTodayInCloud(
+                staleIds
+            );
+
+            state.today =
+                todayTasks;
+
+            state.someday =
+                somedayTasks;
+
+            state.currentDate =
+                todayKey;
+
+            saveState();
 
         renderTodos();
+
+        renderArchive();
 
     }
 
@@ -1556,3 +1857,21 @@ renderTodos();
 renderArchive();
 
 loadTodosFromCloud();
+
+scheduleNextDayReset();
+
+document.addEventListener(
+
+    "visibilitychange",
+
+    ()=>{
+
+        if(
+            document.visibilityState ===
+            "visible"
+        ){
+
+            checkDateChange();
+        }
+    }
+);
