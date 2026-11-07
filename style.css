@@ -162,6 +162,30 @@ body{
         );
 }
 
+#pageTitle{
+
+    color:#f4e9ff;
+
+    -webkit-text-stroke:
+        1.5px #14085c;
+
+    paint-order:
+        stroke fill;
+
+    text-shadow:
+
+        0 3px 0
+        #3a1d86,
+
+        0 8px 16px
+        rgba(
+            8,
+            0,
+            40,
+            .45
+        );
+}
+
 #menuBtn,
 #backBtn,
 #aboutBackBtn{
@@ -234,6 +258,8 @@ body{
     border-radius:40px;
 
     min-height:75vh;
+
+    height:75vh;
 
     padding:32px;
 
@@ -338,13 +364,40 @@ body{
 
     flex:1;
 
+    min-height:0;
+
     list-style:none;
 
     margin:0;
 
-    padding:0;
+    padding:0 8px 0 0;
 
-   
+    overflow-y:auto;
+
+    scrollbar-width:thin;
+
+    scrollbar-color:
+        #7d6ad8
+        #efeafc;
+}
+
+#todoList::-webkit-scrollbar{
+
+    width:8px;
+}
+
+#todoList::-webkit-scrollbar-track{
+
+    background:#efeafc;
+
+    border-radius:99px;
+}
+
+#todoList::-webkit-scrollbar-thumb{
+
+    background:#7d6ad8;
+
+    border-radius:99px;
 }
 
 .todo-item{
@@ -1292,6 +1345,38 @@ body{
     font-size:16px;
 }
 
+.profile-stats{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    margin-top:4px;
+
+    color:#7f8fa3;
+
+    font-family:
+
+        "Segoe UI",
+
+        "STZhongsong",
+
+        "华文中宋",
+
+        serif;
+
+    font-size:15px;
+
+    line-height:1.4;
+}
+
+.profile-stats p{
+
+    margin:0;
+}
+
 #accountCard .profile-name:hover,
 #accountCard .profile-bio:hover{
 
@@ -1326,13 +1411,20 @@ body{
 
 #logoutBtn{
 
+    width:100%;
+
     border:none;
 
-    background:#efefef;
+    background:
+        rgba(168, 198, 255, .28);
 
-    border-radius:16px;
+    color:#d7e4ff;
 
-    padding:14px;
+    border-radius:14px;
+
+    padding:9px 12px;
+
+    font-size:14px;
 
     cursor:pointer;
 
@@ -1349,6 +1441,9 @@ body{
 }
 
 #logoutBtn:hover{
+
+    background:
+        rgba(168, 198, 255, .42);
 
     transform:
         
@@ -1642,6 +1737,11 @@ body{
         font-size:34px;
 
         letter-spacing:0;
+    }
+
+    #pageTitle{
+
+        -webkit-text-stroke-width:1px;
     }
 
     #menuBtn,

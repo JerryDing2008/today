@@ -149,14 +149,39 @@ async function updateUserUI(
                 rows="3"
                 aria-label="座右铭"></textarea>
 
-            <button
-                id="logoutBtn">
+            <div
+                id="profileStats"
+                class="profile-stats">
 
-                Logout
-
-            </button>
+            </div>
 
         `;
+
+        const oldLogout =
+        document.getElementById(
+            "logoutBtn"
+        );
+
+        if(oldLogout){
+
+            oldLogout.remove();
+        }
+
+        const logoutBtn =
+        document.createElement(
+            "button"
+        );
+
+        logoutBtn.id =
+            "logoutBtn";
+
+        logoutBtn.textContent =
+            "Logout";
+
+        accountCard.insertAdjacentElement(
+            "afterend",
+            logoutBtn
+        );
 
         const profileName =
         document.getElementById(
@@ -274,6 +299,8 @@ async function updateUserUI(
             saveProfile
         );
 
+        renderProfileStats();
+
         document
         .getElementById(
             "logoutBtn"
@@ -295,6 +322,16 @@ async function updateUserUI(
         );
 
     }else{
+
+        const oldLogout =
+        document.getElementById(
+            "logoutBtn"
+        );
+
+        if(oldLogout){
+
+            oldLogout.remove();
+        }
 
         accountBtn.textContent =
             "LOGIN";
@@ -904,6 +941,77 @@ function renderDate(){
         state.currentDate;
 }
 
+function renderProfileStats(){
+
+    const stats =
+    document.getElementById(
+        "profileStats"
+    );
+
+    if(!stats){
+
+        return;
+    }
+
+    const todayCount =
+        state.today.length;
+
+    const somedayCount =
+        state.someday.length;
+
+    const archivedCount =
+    Object.values(
+        state.archive || {}
+    ).reduce(
+
+        (sum, day)=>{
+
+            if(
+                !Array.isArray(day)
+            ){
+
+                return sum;
+            }
+
+            return sum + day.length;
+        },
+
+        0
+    );
+
+    stats.textContent = "";
+
+    [
+
+        ["🌱", todayCount, "Tasks"],
+
+        ["🌿", somedayCount, "Someday"],
+
+        ["📦", archivedCount, "Archived"]
+
+    ].forEach(
+
+        ([icon, count, label])=>{
+
+            const line =
+            document.createElement(
+                "p"
+            );
+
+            line.textContent =
+                icon
+                + " "
+                + count
+                + " "
+                + label;
+
+            stats.appendChild(
+                line
+            );
+        }
+    );
+}
+
 // -------------------------
 // Todo
 // -------------------------
@@ -1323,6 +1431,8 @@ function renderTodos(){
             );
         }
     );
+
+    renderProfileStats();
 }
 
 // -------------------------
@@ -1862,6 +1972,8 @@ taskInput.addEventListener(
 // -------------------------
 
 function renderArchive(){
+
+    renderProfileStats();
 
     archiveList.innerHTML = "";
 
