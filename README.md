@@ -66,9 +66,11 @@ Today 是一个轻量级的数字花园（Digital Garden），用于记录真正
 
 ## 🖥️ Demo
 
-GitHub Pages:
+仓库：https://github.com/aobayoru/today
 
-https://jerryding2008.github.io/today/
+GitHub Pages：
+
+https://aobayoru.github.io/today/
 
 ---
 
