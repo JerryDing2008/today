@@ -15,8 +15,6 @@
         rel="stylesheet"
         href="style.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
-
 </head>
 
 <body>
@@ -44,7 +42,9 @@
             Today
             </h1>
 
-            
+            <button id="aboutBtn">
+            🌱 关于 Today
+            </button>
 
             <!-- <div id="authPanel" class="hidden">
 
@@ -151,13 +151,17 @@
 
                     <input
                         id="emailInput"
+                        class="auth-field"
                         type="email"
-                        placeholder="Email">
+                        placeholder="Email"
+                        autocomplete="email">
 
                     <input
                         id="passwordInput"
+                        class="auth-field"
                         type="password"
-                        placeholder="Password">
+                        placeholder="Password"
+                        autocomplete="current-password">
 
                     <button id="signupBtn">
 
@@ -212,6 +216,105 @@
             class="archive-list">
 
         </div>
+
+    </main>
+
+    <!-- 关于页面 -->
+
+    <main
+        id="aboutPage"
+        class="page hidden">
+
+        <header
+            class="header">
+
+            <button id="aboutBackBtn">
+
+                ←
+
+            </button>
+
+            <h1>
+
+                About
+
+            </h1>
+
+        </header>
+
+        <article class="about-card">
+
+            <h2>Today 是什么？</h2>
+
+            <p>Today 不是一个传统意义上的任务管理器。</p>
+
+            <p>它更像一座属于自己的数字花园。</p>
+
+            <p>在这里，你可以记录今天最重要的事情，把未来的想法放进 Someday，把过去留给 Archive。</p>
+
+            <p>Today 希望帮助你专注于现在，而不是被永远做不完的任务清单追赶。</p>
+
+            <h2>🌱 Today</h2>
+
+            <p>Today 用来存放今天要完成的事情。</p>
+
+            <p>新的一天开始时，Yesterday 会成为历史，Today 会重新归零。</p>
+
+            <p>因为每一天都值得被认真开始。</p>
+
+            <h2>🌿 Someday</h2>
+
+            <p>Someday 用来保存未来的想法。</p>
+
+            <p>那些暂时不着急、但又不想忘记的事情，都可以被种在这里。</p>
+
+            <p>等到合适的时候，再把它们带回 Today。</p>
+
+            <h2>📦 Archive</h2>
+
+            <p>Archive 保存过去的记录。</p>
+
+            <p>完成的、遗忘的、或者已经成为回忆的事情，都会留在这里。</p>
+
+            <p>过去不会消失，只是成为历史。</p>
+
+            <h2>☁️ 云同步</h2>
+
+            <p>登录账号后：</p>
+
+            <ul>
+
+                <li>Todo 会自动同步</li>
+
+                <li>Detail Notes 会自动同步</li>
+
+                <li>Someday 会自动同步</li>
+
+                <li>已完成状态会自动同步</li>
+
+            </ul>
+
+            <p>你可以在电脑、平板和手机之间无缝切换。</p>
+
+            <h2>✨ 我们的理念</h2>
+
+            <p class="about-motto">
+
+                Build first.<br>
+                Polish later.
+
+            </p>
+
+            <p>先开始，再完善。</p>
+
+            <p class="about-version">
+
+                Version<br>
+                Today v1
+
+            </p>
+
+        </article>
 
     </main>
 

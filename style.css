@@ -138,7 +138,11 @@ body{
 
         "Segoe UI",
 
-        sans-serif;
+        "STZhongsong",
+
+        "华文中宋",
+
+        serif;
 
     font-size:52px;
 
@@ -159,7 +163,8 @@ body{
 }
 
 #menuBtn,
-#backBtn{
+#backBtn,
+#aboutBackBtn{
 
     border:none;
 
@@ -175,7 +180,8 @@ body{
 }
 
 #menuBtn:hover,
-#backBtn:hover{
+#backBtn:hover,
+#aboutBackBtn:hover{
 
     color:#111;
 }
@@ -282,9 +288,8 @@ body{
     font-family:
         "Segoe UI Black",
         "Segoe UI",
-        "Noto Serif SC",
-        "Songti SC",
-        "STSong",
+        "STZhongsong",
+        "华文中宋",
         serif;
 
     outline:none;
@@ -838,9 +843,8 @@ body{
     font-family:
         "Segoe UI Black",
         "Segoe UI",
-        "Noto Serif SC",
-        "Songti SC",
-        "STSong",
+        "STZhongsong",
+        "华文中宋",
         serif;
 
     background:transparent;
@@ -862,7 +866,11 @@ body{
 
         "Segoe UI",
 
-        sans-serif;
+        "STZhongsong",
+
+        "华文中宋",
+
+        serif;
 
     color:#555;
 
@@ -1140,7 +1148,9 @@ body{
 
     width:100%;
 
-    height:72px;
+    height:60px;
+
+    letter-spacing:1px;
 
     border:none;
 
@@ -1150,7 +1160,7 @@ body{
 
     color:white;
 
-    font-size:36px;
+    font-size:20px;
 
     font-weight:600;
 
@@ -1159,7 +1169,9 @@ body{
     font-family:
         "Segoe UI Black",
         "Segoe UI",
-        sans-serif;
+        "STZhongsong",
+        "华文中宋",
+        serif;
 }
 
 #accountSection{
@@ -1173,17 +1185,61 @@ body{
     gap:24px;
 }
 
-#accountCard input{
+.auth-field{
 
-    border:none;
+    width:100%;
+
+    height:48px;
+
+    border:1.5px solid transparent;
 
     background:#f3f4f6;
 
-    border-radius:14px;
+    border-radius:16px;
 
-    padding:14px;
+    padding:0 16px;
 
     font-size:16px;
+
+    font-family:
+
+        "Segoe UI",
+
+        "STZhongsong",
+
+        "华文中宋",
+
+        serif;
+
+    color:#0c4369;
+
+    outline:none;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+}
+
+.auth-field::placeholder{
+
+    color:#a3aab8;
+}
+
+.auth-field:hover{
+
+    background:#eef1f6;
+}
+
+.auth-field:focus{
+
+    background:white;
+
+    border-color:#06b63f;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(6, 182, 63, .16);
 }
 
 
@@ -1286,7 +1342,9 @@ body{
     font-family:
     "Segoe UI Black",
     "Segoe UI",
-    sans-serif;
+    "STZhongsong",
+    "华文中宋",
+    serif;
         
 }
 
@@ -1303,18 +1361,24 @@ body{
 
     border:none;
 
-    border-radius:14px;
+    border-radius:16px;
 
     padding:14px;
 
     background:#ececec;
+
+    color:#0c4369;
+
+    font-size:15px;
 
     cursor:pointer;
 
     font-family:
         "Segoe UI Black",
         "Segoe UI",
-        sans-serif;
+        "STZhongsong",
+        "华文中宋",
+        serif;
 
     
 
@@ -1329,6 +1393,206 @@ body{
         scale(1.05);
 
     
+}
+
+/* ========================= */
+/* About */
+/* ========================= */
+
+#aboutPage{
+
+    width:min(720px, 90vw);
+
+    left:0;
+
+    right:0;
+
+    margin-left:auto;
+
+    margin-right:auto;
+}
+
+#aboutBackBtn{
+
+    color:#d5b6f8;
+}
+
+#aboutBackBtn:hover{
+
+    color:white;
+}
+
+#aboutBtn{
+
+    margin-left:auto;
+
+    height:56px;
+
+    padding:0 18px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:white;
+
+    cursor:pointer;
+
+    font-family:
+
+        "Segoe UI Black",
+
+        "Segoe UI",
+
+        "STZhongsong",
+
+        "华文中宋",
+
+        serif;
+
+    font-size:16px;
+
+    color:#0c4369;
+
+    box-shadow:
+
+        0 4px 12px
+
+        rgba(
+            0,
+            0,
+            0,
+            .05
+        );
+
+    transition:
+        transform .2s ease;
+}
+
+#aboutBtn:hover{
+
+    transform:
+        scale(1.05);
+}
+
+.about-card{
+
+    width:100%;
+
+    margin-bottom:48px;
+
+    background:white;
+
+    border-radius:40px;
+
+    padding:40px 44px 36px;
+
+    box-shadow:
+        0 12px 40px
+        rgb(11, 1, 91);
+
+    font-family:
+
+        "Segoe UI Black",
+
+        "Segoe UI",
+
+        "STZhongsong",
+
+        "华文中宋",
+
+        serif;
+
+    color:#0c4369;
+}
+
+.about-card h2{
+
+    margin:36px 0 12px;
+
+    font-size:22px;
+
+    font-weight:500;
+
+    line-height:1.4;
+}
+
+.about-card h2:first-child{
+
+    margin-top:0;
+}
+
+.about-card p{
+
+    margin-top:12px;
+
+    font-size:17px;
+
+    line-height:1.85;
+}
+
+.about-card ul{
+
+    margin:8px 0 4px;
+
+    padding-left:1.25em;
+}
+
+.about-card li{
+
+    margin:6px 0;
+
+    font-size:17px;
+
+    line-height:1.8;
+}
+
+.about-motto{
+
+    font-family:
+
+        "Segoe UI Black",
+
+        "Segoe UI",
+
+        "STZhongsong",
+
+        "华文中宋",
+
+        serif;
+
+    font-size:32px;
+
+    line-height:1.25;
+
+    letter-spacing:-.5px;
+
+    color:#251483;
+}
+
+.about-version{
+
+    margin-top:40px;
+
+    font-family:
+
+        "Segoe UI",
+
+        "STZhongsong",
+
+        "华文中宋",
+
+        serif;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    line-height:1.6;
+
+    letter-spacing:.04em;
+
+    color:#999;
 }
 
 /* ========================= */
@@ -1364,6 +1628,8 @@ body{
 
     .header{
 
+        flex-wrap:wrap;
+
         gap:8px;
     }
 
@@ -1380,13 +1646,59 @@ body{
 
     #menuBtn,
     #somedayBtn,
-    #backBtn{
+    #backBtn,
+    #aboutBackBtn{
 
         width:48px;
 
         height:48px;
 
         flex-shrink:0;
+    }
+
+    #aboutPage{
+
+        width:auto;
+
+        margin-left:0;
+
+        margin-right:0;
+    }
+
+    #aboutBtn{
+
+        order:5;
+
+        height:44px;
+
+        margin-left:0;
+
+        padding:0 14px;
+
+        font-size:15px;
+    }
+
+    .about-card{
+
+        border-radius:28px;
+
+        padding:22px 18px 20px;
+    }
+
+    .about-card h2{
+
+        font-size:20px;
+    }
+
+    .about-card p,
+    .about-card li{
+
+        font-size:16px;
+    }
+
+    .about-motto{
+
+        font-size:26px;
     }
 
     .workspace{
@@ -1492,9 +1804,9 @@ body{
 
     #accountBtn{
 
-        height:56px;
+        height:52px;
 
-        font-size:22px;
+        font-size:18px;
 
         border-radius:22px;
     }
@@ -1505,7 +1817,8 @@ body{
     }
 
     #accountCard input,
-    #accountCard textarea{
+    #accountCard textarea,
+    .auth-field{
 
         font-size:16px;
     }

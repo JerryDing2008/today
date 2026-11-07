@@ -305,13 +305,17 @@ async function updateUserUI(
 
             <input
                 id="emailInput"
+                class="auth-field"
                 type="email"
-                placeholder="Email">
+                placeholder="Email"
+                autocomplete="email">
 
             <input
                 id="passwordInput"
+                class="auth-field"
                 type="password"
-                placeholder="Password">
+                placeholder="Password"
+                autocomplete="current-password">
 
             <button
                 id="signupBtn">
@@ -435,6 +439,21 @@ document.getElementById(
 const archivePage =
 document.getElementById(
     "archivePage"
+);
+
+const aboutPage =
+document.getElementById(
+    "aboutPage"
+);
+
+const aboutBtn =
+document.getElementById(
+    "aboutBtn"
+);
+
+const aboutBackBtn =
+document.getElementById(
+    "aboutBackBtn"
 );
 
 const detailPanel =
@@ -1988,13 +2007,7 @@ function switchPage(
         return;
     }
 
-    if(
-        direction ===
-        "forward"
-    ){
-
-        renderArchive();
-    }
+    window.scrollTo(0, 0);
 
     const enterClass =
 
@@ -2077,10 +2090,30 @@ function switchPage(
 
 function showArchive(){
 
+    renderArchive();
+
     switchPage(
         todayPage,
         archivePage,
         "forward"
+    );
+}
+
+function showAbout(){
+
+    switchPage(
+        todayPage,
+        aboutPage,
+        "forward"
+    );
+}
+
+function showTodayFromAbout(){
+
+    switchPage(
+        aboutPage,
+        todayPage,
+        "back"
     );
 }
 
@@ -2105,6 +2138,20 @@ backBtn.addEventListener(
     "click",
 
     showToday
+);
+
+aboutBtn.addEventListener(
+
+    "click",
+
+    showAbout
+);
+
+aboutBackBtn.addEventListener(
+
+    "click",
+
+    showTodayFromAbout
 );
 
 // -------------------------
