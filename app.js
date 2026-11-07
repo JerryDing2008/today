@@ -665,6 +665,9 @@ accountBtn.addEventListener(
 // 状态
 // -------------------------
 let selectedTaskId = null;
+
+let selectedProjectId = null;
+
 let state = {
 
     currentDate: "",
@@ -673,10 +676,145 @@ let state = {
 
     someday: [],
 
-    archive: {}
+    archive: {},
+
+    projects: []
 };
+
 let currentMode =
     "today";
+
+// -------------------------
+// Project 预设图标
+// -------------------------
+
+const PROJECT_ICONS = [
+
+    "📦",
+
+    "🌱",
+
+    "🌼",
+
+    "🍀",
+
+    "🌿",
+
+    "📚",
+
+    "💻",
+
+    "🎨",
+
+    "🎵",
+
+    "📷",
+
+    "✈️",
+
+    "🏃",
+
+    "☕",
+
+    "📖",
+
+    "🌙"
+];
+
+const DEFAULT_PROJECT_ICON = "📦";
+
+const UNGROUPED_KEY = "ungrouped";
+
+const expandedProjects = new Set([
+    UNGROUPED_KEY
+]);
+
+// -------------------------
+// Archive · someday 分组
+// -------------------------
+
+const SOMEDAY_ARCHIVE_KEY =
+    "someday";
+
+function somedayArchive(){
+
+    if(!state.archive){
+
+        state.archive = {};
+    }
+
+    if(
+        !Array.isArray(
+            state.archive[SOMEDAY_ARCHIVE_KEY]
+        )
+    ){
+
+        state.archive[SOMEDAY_ARCHIVE_KEY] =
+            [];
+    }
+
+    return state.archive[SOMEDAY_ARCHIVE_KEY];
+}
+
+// -------------------------
+// 列表收起动画
+// -------------------------
+
+const COLLAPSE_DURATION = 360;
+
+function collapseOut(element, done){
+
+    if(!element){
+
+        done();
+
+        return;
+    }
+
+    if(
+        element.classList.contains(
+            "removing"
+        )
+    ){
+
+        return;
+    }
+
+    // 连同父容器的 gap 一起收掉，剩余条目才能连贯上移
+
+    const parent =
+        element.parentElement;
+
+    const gap = parent
+
+        ? parseFloat(
+            getComputedStyle(
+                parent
+            ).rowGap
+        ) || 0
+
+        : 0;
+
+    element.style.maxHeight =
+        element.offsetHeight + "px";
+
+    void element.offsetWidth;
+
+    element.classList.add(
+        "removing"
+    );
+
+    element.style.maxHeight =
+        "0px";
+
+    element.style.marginBottom =
+        (-gap) + "px";
+
+    setTimeout(
+        done,
+        COLLAPSE_DURATION
+    );
+}
 
 // -------------------------
 // 日期
@@ -762,9 +900,30 @@ function loadState(){
         state =
             JSON.parse(raw);
 
+        let needsSave = false;
+
         if(!state.someday){
 
             state.someday = [];
+
+            needsSave = true;
+        }
+
+        if(!state.archive){
+
+            state.archive = {};
+
+            needsSave = true;
+        }
+
+        if(!Array.isArray(state.projects)){
+
+            state.projects = [];
+
+            needsSave = true;
+        }
+
+        if(needsSave){
 
             saveState();
         }
@@ -780,7 +939,9 @@ function loadState(){
 
             someday: [],
 
-            archive: {}
+            archive: {},
+
+            projects: []
         };
 
         saveState();
@@ -796,6 +957,13 @@ function loadState(){
 function showEmptyDetail(){
 
     selectedTaskId = null;
+
+    selectedProjectId = null;
+
+    renderEmptyDetailContent();
+}
+
+function renderEmptyDetailContent(){
 
     const title =
 
@@ -829,6 +997,8 @@ function showEmptyDetail(){
         </div>
 
     `;
+
+    updateAddBarState();
 }
 
 function checkDateChange(){
@@ -1013,25 +1183,1140 @@ function renderProfileStats(){
 }
 
 // -------------------------
-// Todo
+// Project
 // -------------------------
+
+const PROJECT_TABLE = "project";
+
+function currentTasks(){
+
+    return currentMode === "today"
+        ? state.today
+        : state.someday;
+}
+
+function projectsForMode(mode){
+
+    return (state.projects || []).filter(
+        project => project.mode === mode
+    );
+}
+
+function selectedProject(){
+
+    if(
+        selectedProjectId === null ||
+        selectedProjectId === undefined
+    ){
+
+        return null;
+    }
+
+    return projectsForMode(currentMode).find(
+
+        project =>
+            String(project.id) ===
+            String(selectedProjectId)
+
+    ) || null;
+}
+
+// Someday 的底部输入框：必须选中某个 Project 才能使用
+
+function updateAddBarState(){
+
+    if(currentMode === "someday"){
+
+        if(
+            selectedProjectId === null ||
+            selectedProjectId === undefined
+        ){
+
+            taskInput.disabled = true;
+
+            addBtn.disabled = true;
+
+            taskInput.placeholder =
+                "先选择一个项目";
+
+            return;
+        }
+
+        const project = selectedProject();
+
+        taskInput.disabled = false;
+
+        addBtn.disabled = false;
+
+        taskInput.placeholder = project
+            ? `添加到 ${project.name}`
+            : "添加到 未分组";
+
+        return;
+    }
+
+    taskInput.disabled = false;
+
+    addBtn.disabled = false;
+
+    taskInput.placeholder = "";
+}
+
+function isProjectTask(task, projects){
+
+    if(
+        task.project_id === null ||
+        task.project_id === undefined
+    ){
+
+        return false;
+    }
+
+    return projects.some(
+        project =>
+            String(project.id) ===
+            String(task.project_id)
+    );
+}
+
+function findGroupEl(id){
+
+    const key = String(id);
+
+    const groups = todoList.querySelectorAll(
+        ".project-group"
+    );
+
+    for(const groupEl of groups){
+
+        if(groupEl.dataset.projectKey === key){
+
+            return groupEl;
+        }
+    }
+
+    return null;
+}
+
+function markNewItem(id){
+
+    const key = String(id);
+
+    const items = todoList.querySelectorAll(
+        ".todo-item"
+    );
+
+    for(const item of items){
+
+        if(item.dataset.taskId === key){
+
+            item.classList.add("new-item");
+
+            return;
+        }
+    }
+}
+
+function refreshGroupCount(groupEl){
+
+    if(!groupEl){
+
+        return;
+    }
+
+    const countEl = groupEl.querySelector(
+        ".project-count"
+    );
+
+    if(!countEl){
+
+        return;
+    }
+
+    const tasks = currentTasks();
+
+    const projects = projectsForMode(currentMode);
+
+    const key = groupEl.dataset.projectKey;
+
+    const count =
+
+        key === UNGROUPED_KEY
+
+        ? tasks.filter(
+            task => !isProjectTask(task, projects)
+        ).length
+
+        : tasks.filter(
+            task => String(task.project_id) === key
+        ).length;
+
+    countEl.textContent = count;
+}
+
+function setGroupExpanded(
+    groupEl,
+    expanded,
+    animate
+){
+
+    const tasksEl = groupEl.querySelector(
+        ".project-tasks"
+    );
+
+    if(!tasksEl){
+
+        return;
+    }
+
+    if(!animate){
+
+        tasksEl.style.transition = "none";
+
+        groupEl.classList.toggle(
+            "expanded",
+            expanded
+        );
+
+        tasksEl.style.maxHeight =
+            expanded ? "none" : "0px";
+
+        void tasksEl.offsetHeight;
+
+        tasksEl.style.transition = "";
+
+        return;
+    }
+
+    if(expanded){
+
+        groupEl.classList.add("expanded");
+
+        if(tasksEl.style.maxHeight === "none"){
+
+            return;
+        }
+
+        tasksEl.style.maxHeight =
+            tasksEl.scrollHeight + "px";
+
+        tasksEl.addEventListener(
+
+            "transitionend",
+
+            function handler(event){
+
+                if(
+                    event.target !== tasksEl ||
+                    event.propertyName !==
+                    "max-height"
+                ){
+
+                    return;
+                }
+
+                tasksEl.removeEventListener(
+                    "transitionend",
+                    handler
+                );
+
+                tasksEl.style.maxHeight = "none";
+            }
+        );
+
+        return;
+    }
+
+    groupEl.classList.remove("expanded");
+
+    if(tasksEl.style.maxHeight === "none"){
+
+        tasksEl.style.maxHeight =
+            tasksEl.scrollHeight + "px";
+
+        void tasksEl.offsetHeight;
+    }
+
+    tasksEl.style.maxHeight = "0px";
+}
+
+function buildGroup(project, tasks){
+
+    const isProject = Boolean(project);
+
+    const key = isProject
+        ? String(project.id)
+        : UNGROUPED_KEY;
+
+    const groupEl = document.createElement("li");
+
+    groupEl.className = "project-group";
+
+    groupEl.dataset.projectKey = key;
+
+    // 重建后恢复选中高亮
+
+    if(String(selectedProjectId) === key){
+
+        groupEl.classList.add("selected");
+    }
+
+    const expanded = expandedProjects.has(key);
+
+    const header = document.createElement("div");
+
+    header.className = "project-header";
+
+    header.innerHTML = `
+
+        <span class="project-icon">
+        ${isProject ? project.icon : "🧺"}
+        </span>
+
+        <span class="project-name">
+        ${isProject ? project.name : "未分组"}
+        </span>
+
+        <span class="project-count">
+        ${tasks.length}
+        </span>
+
+        <span class="project-arrow">
+        ▸
+        </span>
+
+    `;
+
+    const tasksEl = document.createElement("ul");
+
+    tasksEl.className = "project-tasks";
+
+    tasks.forEach(
+
+        task =>
+        tasksEl.appendChild(
+            buildTaskItem(task, groupEl)
+        )
+    );
+
+    groupEl.appendChild(header);
+
+    groupEl.appendChild(tasksEl);
+
+    header.addEventListener(
+
+        "click",
+
+        ()=>{
+
+            const nowExpanded =
+
+                !expandedProjects.has(key);
+
+            if(nowExpanded){
+
+                expandedProjects.add(key);
+
+            }else{
+
+                expandedProjects.delete(key);
+            }
+
+            setGroupExpanded(
+                groupEl,
+                nowExpanded,
+                true
+            );
+
+            selectGroup(project);
+        }
+    );
+
+    setGroupExpanded(groupEl, expanded, false);
+
+    return groupEl;
+}
 
 function renderTodos(){
 
     todoList.innerHTML = "";
 
-        const tasks =
+    const tasks = currentTasks();
 
-        currentMode ===
-        "today"
+    // Today：不分文件夹，直接平铺所有任务
 
-        ? state.today
+    if(currentMode === "today"){
 
-        : state.someday;
+        tasks.forEach(
 
-    tasks.forEach(
+            task =>
+            todoList.appendChild(
+                buildTaskItem(task, null)
+            )
+        );
 
-        task=>{
+        updateAddBarState();
+
+        renderProfileStats();
+
+        return;
+    }
+
+    // Someday：按 Project 分组
+
+    const projects = projectsForMode("someday");
+
+    const ungrouped = tasks.filter(
+        task => !isProjectTask(task, projects)
+    );
+
+    if(ungrouped.length > 0){
+
+        todoList.appendChild(
+            buildGroup(null, ungrouped)
+        );
+    }
+
+    projects.forEach(
+
+        project=>{
+
+            const groupTasks = tasks.filter(
+                task =>
+                    String(task.project_id) ===
+                    String(project.id)
+            );
+
+            todoList.appendChild(
+                buildGroup(project, groupTasks)
+            );
+        }
+    );
+
+    const newProjectRow =
+        document.createElement("li");
+
+    newProjectRow.className =
+        "new-project-row";
+
+    newProjectRow.textContent =
+        "＋ New Project";
+
+    newProjectRow.addEventListener(
+        "click",
+        addProject
+    );
+
+    todoList.appendChild(newProjectRow);
+
+    updateAddBarState();
+
+    renderProfileStats();
+}
+
+function addTaskToProject(project, text){
+
+    const target = currentTasks();
+
+    const newTask = {
+
+        id: Date.now(),
+
+        text,
+
+        detail: "",
+
+        done: false,
+
+        project_id: project ? project.id : null
+    };
+
+    target.unshift(newTask);
+
+    if(!project){
+
+        expandedProjects.add(UNGROUPED_KEY);
+    }
+
+    saveTodoToCloud(newTask);
+
+    saveState();
+
+    renderTodos();
+
+    markNewItem(newTask.id);
+}
+
+// -------------------------
+// 跨文件夹移动（Someday）
+// -------------------------
+
+function moveSectionHTML(task){
+
+    if(currentMode !== "someday"){
+
+        return "";
+    }
+
+    const currentKey =
+
+        task.project_id === null ||
+        task.project_id === undefined
+
+        ? UNGROUPED_KEY
+        : String(task.project_id);
+
+    const options = [
+
+        {
+            key: UNGROUPED_KEY,
+            icon: "🧺",
+            name: "未分组"
+        }
+
+    ].concat(
+
+        projectsForMode("someday").map(
+            project=>({
+
+                key: String(project.id),
+
+                icon: project.icon,
+
+                name: project.name
+            })
+        )
+    );
+
+    // 只有一个去处（未分组）时不必显示
+
+    if(options.length < 2){
+
+        return "";
+    }
+
+    const buttons = options.map(
+
+        option =>
+
+        `<button
+            type="button"
+            class="move-target${
+                option.key === currentKey
+                ? " active"
+                : ""
+            }"
+            data-key="${option.key}">
+
+            <span class="move-icon">
+            ${option.icon}
+            </span>
+
+            <span class="move-name">
+            ${option.name}
+            </span>
+
+        </button>`
+
+    ).join("");
+
+    return `
+
+        <div class="settings-label">
+        移动到
+        </div>
+
+        <div class="move-list">
+        ${buttons}
+        </div>
+
+    `;
+}
+
+function bindMoveTargets(task){
+
+    const list =
+        detailPanel.querySelector(".move-list");
+
+    if(!list){
+
+        return;
+    }
+
+    const projects = projectsForMode("someday");
+
+    list.querySelectorAll(".move-target")
+    .forEach(
+
+        button=>{
+
+            button.addEventListener(
+
+                "click",
+
+                ()=>{
+
+                    if(
+                        button.classList.contains(
+                            "active"
+                        )
+                    ){
+
+                        return;
+                    }
+
+                    const key = button.dataset.key;
+
+                    const project =
+
+                        key === UNGROUPED_KEY
+                        ? null
+                        : projects.find(
+                            item =>
+                                String(item.id) === key
+                        ) || null;
+
+                    moveTask(task, project, list);
+                }
+            );
+        }
+    );
+}
+
+function moveTask(task, project, listEl){
+
+    const nextId =
+        project ? project.id : null;
+
+    const currentId =
+        task.project_id === undefined
+        ? null
+        : task.project_id;
+
+    if(String(currentId) === String(nextId)){
+
+        return;
+    }
+
+    task.project_id = nextId;
+
+    expandedProjects.add(
+        project
+        ? String(project.id)
+        : UNGROUPED_KEY
+    );
+
+    saveState();
+
+    updateTodoInCloud(
+        task.id,
+        { project_id: nextId }
+    );
+
+    renderTodos();
+
+    markNewItem(task.id);
+
+    if(!listEl){
+
+        return;
+    }
+
+    listEl.querySelectorAll(".move-target")
+    .forEach(
+        button => button.classList.remove("active")
+    );
+
+    const active =
+        listEl.querySelector(
+            `.move-target[data-key="${
+                project
+                ? String(project.id)
+                : UNGROUPED_KEY
+            }"]`
+        );
+
+    if(active){
+
+        active.classList.add("active");
+    }
+}
+
+// -------------------------
+// Project · Detail Panel
+// -------------------------
+
+// project 为 null 时表示「未分组」
+
+function selectGroup(project){
+
+    const key = project
+        ? project.id
+        : UNGROUPED_KEY;
+
+    // 已选中：只做展开/收起，不重渲染详情面板
+
+    if(String(selectedProjectId) === String(key)){
+
+        return;
+    }
+
+    selectedTaskId = null;
+
+    selectedProjectId = key;
+
+    todoList
+    .querySelectorAll(".todo-item.selected")
+    .forEach(
+        item => item.classList.remove("selected")
+    );
+
+    todoList
+    .querySelectorAll(".project-group.selected")
+    .forEach(
+        item => item.classList.remove("selected")
+    );
+
+    const groupEl = findGroupEl(selectedProjectId);
+
+    if(groupEl){
+
+        groupEl.classList.add("selected");
+    }
+
+    if(project){
+
+        renderProjectSettings(project);
+
+    }else{
+
+        renderEmptyDetailContent();
+    }
+
+    updateAddBarState();
+}
+
+function renderProjectSettings(project){
+
+    detailPanel.innerHTML = `
+
+        <div class="detail-content-fade project-settings">
+
+            <div class="settings-title">
+
+                Project Settings
+
+            </div>
+
+            <div class="settings-label">
+
+                Name
+
+            </div>
+
+            <input
+                id="projectNameInput"
+                class="settings-name-input"
+                type="text"
+                maxlength="60"
+                aria-label="项目名称">
+
+            <div class="settings-label">
+
+                Icon
+
+            </div>
+
+            <div class="icon-grid" id="iconGrid">
+
+            </div>
+
+            <button
+                id="deleteProjectBtn"
+                class="delete-project-btn">
+
+                删除项目
+
+            </button>
+
+        </div>
+
+    `;
+
+    const nameInput = document.getElementById(
+        "projectNameInput"
+    );
+
+    nameInput.value = project.name;
+
+    nameInput.addEventListener(
+
+        "keydown",
+
+        event=>{
+
+            if(event.key === "Enter"){
+
+                event.preventDefault();
+
+                nameInput.blur();
+            }
+        }
+    );
+
+    nameInput.addEventListener(
+
+        "blur",
+
+        ()=>{
+
+            const next = nameInput.value.trim();
+
+            if(!next){
+
+                nameInput.value = project.name;
+
+                return;
+            }
+
+            renameProject(project, next);
+        }
+    );
+
+    const grid = document.getElementById("iconGrid");
+
+    PROJECT_ICONS.forEach(
+
+        icon=>{
+
+            const btn =
+                document.createElement("button");
+
+            btn.type = "button";
+
+            btn.className = "icon-choice";
+
+            btn.textContent = icon;
+
+            if(icon === project.icon){
+
+                btn.classList.add("active");
+            }
+
+            btn.addEventListener(
+
+                "click",
+
+                ()=>{
+
+                    setProjectIcon(project, icon);
+
+                    grid
+                    .querySelectorAll(".icon-choice")
+                    .forEach(
+                        item =>
+                        item.classList.remove("active")
+                    );
+
+                    btn.classList.add("active");
+                }
+            );
+
+            grid.appendChild(btn);
+        }
+    );
+
+    document
+    .getElementById("deleteProjectBtn")
+    .addEventListener(
+        "click",
+        ()=> deleteProject(project)
+    );
+}
+
+function renameProject(project, name){
+
+    if(name === project.name){
+
+        return;
+    }
+
+    project.name = name;
+
+    saveState();
+
+    updateProjectInCloud(project.id, { name });
+
+    const groupEl = findGroupEl(project.id);
+
+    if(groupEl){
+
+        const nameEl = groupEl.querySelector(
+            ".project-name"
+        );
+
+        if(nameEl){
+
+            nameEl.textContent = name;
+        }
+    }
+}
+
+function setProjectIcon(project, icon){
+
+    if(icon === project.icon){
+
+        return;
+    }
+
+    project.icon = icon;
+
+    saveState();
+
+    updateProjectInCloud(project.id, { icon });
+
+    const groupEl = findGroupEl(project.id);
+
+    if(groupEl){
+
+        const iconEl = groupEl.querySelector(
+            ".project-icon"
+        );
+
+        if(iconEl){
+
+            iconEl.textContent = icon;
+        }
+    }
+}
+
+function deleteProject(project){
+
+    const ok = window.confirm(
+        "删除项目「" +
+        project.name +
+        "」及其中的所有任务？"
+    );
+
+    if(!ok){
+
+        return;
+    }
+
+    const key = String(project.id);
+
+    state.today = state.today.filter(
+        task => String(task.project_id) !== key
+    );
+
+    state.someday = state.someday.filter(
+        task => String(task.project_id) !== key
+    );
+
+    Object.keys(state.archive || {}).forEach(
+
+        date=>{
+
+            if(!Array.isArray(state.archive[date])){
+
+                return;
+            }
+
+            state.archive[date] =
+            state.archive[date].filter(
+                task => String(task.project_id) !== key
+            );
+        }
+    );
+
+    state.projects = state.projects.filter(
+        item => String(item.id) !== key
+    );
+
+    expandedProjects.delete(key);
+
+    saveState();
+
+    deleteProjectFromCloud(project.id);
+
+    if(String(selectedProjectId) === key){
+
+        selectedProjectId = null;
+
+        showEmptyDetail();
+    }
+
+    const groupEl = findGroupEl(project.id);
+
+    const finish = ()=>{
+
+        renderTodos();
+
+        renderArchive();
+    };
+
+    if(groupEl){
+
+        collapseOut(groupEl, finish);
+
+    }else{
+
+        finish();
+    }
+}
+
+// -------------------------
+// Project · 云同步
+// -------------------------
+
+async function saveProjectToCloud(project){
+
+    const {
+        data:{ session }
+    } = await sbClient.auth.getSession();
+
+    if(!session){
+
+        return null;
+    }
+
+    const row = {
+
+        user_id: session.user.id,
+
+        name: project.name,
+
+        icon: project.icon,
+
+        mode: project.mode
+    };
+
+    const { data, error } = await sbClient
+
+        .from(PROJECT_TABLE)
+
+        .insert(row)
+
+        .select()
+
+        .single();
+
+    console.log("PROJECT INSERT ERROR", error);
+
+    return data || null;
+}
+
+async function updateProjectInCloud(id, fields){
+
+    const { error } = await sbClient
+
+        .from(PROJECT_TABLE)
+
+        .update(fields)
+
+        .eq("id", id);
+
+    console.log("PROJECT UPDATE ERROR", error);
+}
+
+async function deleteProjectFromCloud(id){
+
+    const { error } = await sbClient
+
+        .from(PROJECT_TABLE)
+
+        .delete()
+
+        .eq("id", id);
+
+    console.log("PROJECT DELETE ERROR", error);
+}
+
+async function loadProjectsFromCloud(){
+
+    const {
+        data:{ session }
+    } = await sbClient.auth.getSession();
+
+    if(!session){
+
+        return;
+    }
+
+    const { data, error } = await sbClient
+
+        .from(PROJECT_TABLE)
+
+        .select("*");
+
+    console.log("PROJECTS", data, error);
+
+    if(!data){
+
+        return;
+    }
+
+    state.projects = data.map(
+
+        project => ({
+
+            id: project.id,
+
+            name: project.name || "新项目",
+
+            icon:
+                project.icon ||
+                DEFAULT_PROJECT_ICON,
+
+            mode: project.mode || "today"
+        })
+    );
+
+    saveState();
+}
+
+async function addProject(){
+
+    const draft = {
+
+        name: "新项目",
+
+        icon: DEFAULT_PROJECT_ICON,
+
+        mode: currentMode
+    };
+
+    const saved = await saveProjectToCloud(draft);
+
+    const project = {
+
+        id: saved ? saved.id : Date.now(),
+
+        name: draft.name,
+
+        icon: draft.icon,
+
+        mode: draft.mode
+    };
+
+    state.projects.push(project);
+
+    expandedProjects.add(String(project.id));
+
+    saveState();
+
+    renderTodos();
+
+    selectGroup(project);
+
+    taskInput.focus();
+}
+
+// -------------------------
+// Todo
+// -------------------------
+
+function buildTaskItem(task, groupEl){
 
             const li =
             document.createElement(
@@ -1040,6 +2325,9 @@ function renderTodos(){
 
             li.className =
                 "todo-item";
+
+            li.dataset.taskId =
+                String(task.id);
 
             if(task.done){
 
@@ -1168,6 +2456,76 @@ function renderTodos(){
                     }
                 }
 
+                // Someday：打勾后自动消失，归入 Archive 的 someday 分组
+
+                if(
+                    currentMode ===
+                    "someday"
+                ){
+
+                    task.done = true;
+
+                    somedayArchive()
+                    .unshift(
+
+                        JSON.parse(
+                            JSON.stringify(
+                                task
+                            )
+                        )
+                    );
+
+                    state.someday =
+
+                        state.someday.filter(
+
+                            t =>
+
+                            t.id !== task.id
+                        );
+
+                    if(
+                        selectedTaskId ===
+                        task.id
+                    ){
+
+                        selectedTaskId = null;
+
+                        showEmptyDetail();
+                    }
+
+                    saveState();
+
+                    collapseOut(
+
+                        li,
+
+                        ()=>{
+
+                            // 只移除这一条，不重建整个列表
+
+                            li.remove();
+
+                            refreshGroupCount(groupEl);
+
+                            renderProfileStats();
+
+                            updateTodoInCloud(
+
+                                task.id,
+
+                                {
+                                    done: true
+                                }
+
+                            );
+
+                        }
+                    );
+
+                    return;
+                }
+
                 li.classList.toggle(
                     "done"
                 );
@@ -1200,55 +2558,59 @@ function renderTodos(){
 
                 ()=>{
 
-                    li.classList.add(
-                        "removing"
-                    );
+                    collapseOut(
 
-                    setTimeout(()=>{
+                        li,
 
-                        deleteTodoFromCloud(
-                            task.id
-                        );
+                        ()=>{
 
-                        const target =
+                            li.remove();
 
-                            currentMode ===
-                            "today"
-
-                            ? state.today
-
-                            : state.someday;
-
-                        const updated =
-
-                            target.filter(
-
-                                t=>
-
-                                t.id !==
+                            deleteTodoFromCloud(
                                 task.id
                             );
 
-                        if(
+                            const target =
 
-                            currentMode ===
-                            "today"
-                        ){
+                                currentMode ===
+                                "today"
 
-                            state.today =
-                                updated;
+                                ? state.today
 
-                        }else{
+                                : state.someday;
 
-                            state.someday =
-                                updated;
+                            const updated =
+
+                                target.filter(
+
+                                    t=>
+
+                                    t.id !==
+                                    task.id
+                                );
+
+                            if(
+
+                                currentMode ===
+                                "today"
+                            ){
+
+                                state.today =
+                                    updated;
+
+                            }else{
+
+                                state.someday =
+                                    updated;
+                            }
+
+                            saveState();
+
+                            refreshGroupCount(groupEl);
+
+                            renderProfileStats();
                         }
-
-                        saveState();
-
-                        renderTodos();
-
-                    },300);
+                    );
                 }
             );
             li.querySelector(
@@ -1263,9 +2625,25 @@ function renderTodos(){
                     selectedTaskId =
                         task.id;
 
+                    selectedProjectId =
+                        null;
+
+                    updateAddBarState();
+
                     document
                     .querySelectorAll(
                         ".todo-item"
+                    )
+                    .forEach(
+                        item =>
+                        item.classList.remove(
+                            "selected"
+                        )
+                    );
+
+                    document
+                    .querySelectorAll(
+                        ".project-group.selected"
                     )
                     .forEach(
                         item =>
@@ -1292,6 +2670,8 @@ function renderTodos(){
                             id="detailInput"
                             class="detail-input"
                             placeholder="点击添加说明..."></textarea>
+
+                        ${moveSectionHTML(task)}
 
                     </div>
 
@@ -1326,6 +2706,8 @@ function renderTodos(){
 
                     detailInput.value =
                         task.detail || "";
+
+                    bindMoveTargets(task);
 
                     const fitTitle = ()=>{
 
@@ -1426,13 +2808,7 @@ function renderTodos(){
 
                 }
             );
-            todoList.appendChild(
-                li
-            );
-        }
-    );
-
-    renderProfileStats();
+    return li;
 }
 
 // -------------------------
@@ -1472,7 +2848,12 @@ async function saveTodoToCloud(task){
             currentMode,
 
         day:
-            getTodayString()
+            getTodayString(),
+
+        project_id:
+            task.project_id === undefined
+            ? null
+            : task.project_id
     };
 
     let { error } =
@@ -1490,6 +2871,23 @@ async function saveTodoToCloud(task){
     ){
 
         delete row.day;
+
+        ({ error } =
+
+        await sbClient
+
+            .from("todo")
+
+            .insert(row));
+    }
+
+    if(
+        error &&
+        String(error.message)
+        .includes("project_id")
+    ){
+
+        delete row.project_id;
 
         ({ error } =
 
@@ -1693,7 +3091,12 @@ async function loadTodosFromCloud(){
 
                         detail: todo.detail || "",
 
-                        done: todo.done
+                        done: todo.done,
+
+                        project_id:
+                            todo.project_id === undefined
+                            ? null
+                            : todo.project_id
                     };
 
                     if(
@@ -1701,9 +3104,36 @@ async function loadTodosFromCloud(){
                         "someday"
                     ){
 
-                        somedayTasks.push(
-                            task
-                        );
+                        if(todo.done){
+
+                            // 已打勾的 someday 归入 Archive
+
+                            const bucket =
+                                somedayArchive();
+
+                            const already =
+
+                                bucket.some(
+
+                                    item =>
+
+                                    item.id ===
+                                    task.id
+                                );
+
+                            if(!already){
+
+                                bucket.push(
+                                    task
+                                );
+                            }
+
+                        }else{
+
+                            somedayTasks.push(
+                                task
+                            );
+                        }
 
                         return;
                     }
@@ -1809,14 +3239,26 @@ function addTask(){
         return;
     }
 
-    const target =
+    // Someday：只把任务加进当前选中的 Project
 
-        currentMode ===
-        "today"
+    if(currentMode === "someday"){
 
-        ? state.today
+        if(
+            selectedProjectId === null ||
+            selectedProjectId === undefined
+        ){
 
-        : state.someday;
+            return;
+        }
+
+        taskInput.value = "";
+
+        // selectedProject() 为 null 时表示「未分组」
+
+        addTaskToProject(selectedProject(), text);
+
+        return;
+    }
 
     const newTask = {
 
@@ -1827,10 +3269,12 @@ function addTask(){
 
         detail:"",
 
-        done:false
+        done:false,
+
+        project_id:null
     };
 
-    target.unshift(
+    state.today.unshift(
         newTask
     );
 
@@ -1845,17 +3289,9 @@ function addTask(){
 
     renderTodos();
 
-    const firstItem =
-    document.querySelector(
-        ".todo-item"
+    markNewItem(
+        newTask.id
     );
-
-    if(firstItem){
-
-        firstItem.classList.add(
-            "new-item"
-        );
-    }
 }
 
 addBtn.addEventListener(
@@ -1924,29 +3360,9 @@ somedayBtn.addEventListener(
         
          selectedTaskId = null;
 
-        detailPanel.innerHTML = `
+        selectedProjectId = null;
 
-        <div class="empty-detail detail-content-fade">
-
-            <div class="empty-title">
-
-                ${
-                    currentMode === "today"
-                    ? "Today"
-                    : "Someday"
-                }
-
-            </div>
-
-            <div class="empty-subtitle">
-
-                选择一个待办事项
-
-            </div>
-
-        </div>
-
-        `;           
+        showEmptyDetail();
 
         renderTodos();
     }
@@ -1977,13 +3393,27 @@ function renderArchive(){
 
     archiveList.innerHTML = "";
 
+    const somedayTasks =
+        somedayArchive();
+
     const dates =
+
     Object.keys(
         state.archive
-    ).sort().reverse();
+    )
+
+    .filter(
+
+        date =>
+
+        date !== SOMEDAY_ARCHIVE_KEY
+    )
+
+    .sort().reverse();
 
     if(
-        dates.length === 0
+        dates.length === 0 &&
+        somedayTasks.length === 0
     ){
 
         archiveList.innerHTML =
@@ -1996,6 +3426,44 @@ function renderArchive(){
 
         return;
     }
+
+    // 置顶：已完成的 Someday
+
+    const somedayItem =
+        document.createElement(
+            "div"
+        );
+
+    somedayItem.className =
+        "archive-item archive-someday";
+
+    somedayItem.innerHTML =
+
+    `
+    <strong>
+    🌿 ${SOMEDAY_ARCHIVE_KEY}
+    </strong>
+
+    <span class="archive-count">
+    ${somedayTasks.length}
+    </span>
+    `;
+
+    somedayItem.addEventListener(
+
+        "click",
+
+        ()=>{
+
+            renderArchiveDay(
+                SOMEDAY_ARCHIVE_KEY
+            );
+        }
+    );
+
+    archiveList.appendChild(
+        somedayItem
+    );
 
     dates.forEach(
 
@@ -2023,7 +3491,7 @@ function renderArchive(){
 
                 ()=>{
 
-                    openArchiveDay(
+                    renderArchiveDay(
                         date
                     );
                 }
@@ -2041,10 +3509,20 @@ function renderArchive(){
 // 查看历史
 // -------------------------
 
-function openArchiveDay(date){
+function renderArchiveDay(date){
+
+    const isSomeday =
+
+        date ===
+        SOMEDAY_ARCHIVE_KEY;
 
     const tasks =
-        state.archive[date];
+
+        isSomeday
+
+        ? somedayArchive()
+
+        : (state.archive[date] || []);
 
     archiveList.innerHTML = "";
 
@@ -2070,6 +3548,28 @@ function openArchiveDay(date){
         back
     );
 
+    if(tasks.length === 0){
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.className =
+            "archive-item";
+
+        empty.textContent =
+            isSomeday
+            ? "还没有完成的 Someday"
+            : "这一天没有记录";
+
+        archiveList.appendChild(
+            empty
+        );
+
+        return;
+    }
+
     tasks.forEach(
 
         task=>{
@@ -2080,25 +3580,236 @@ function openArchiveDay(date){
             );
 
             item.className =
-                "archive-item";
 
-            item.innerHTML =
+                isSomeday
+
+                ? "archive-item archive-task-item"
+
+                : "archive-item";
+
+            if(!isSomeday){
+
+                item.innerHTML =
+
+                `
+                ${
+                task.done
+                ? "✓"
+                : "○"
+                }
+
+                ${task.text}
+                `;
+
+                archiveList
+                .appendChild(
+                    item
+                );
+
+                return;
+            }
+
+            const text =
+                document.createElement(
+                    "div"
+                );
+
+            text.className =
+                "archive-task-text";
+
+            text.innerHTML =
 
             `
-            ${
-            task.done
-            ? "✓"
-            : "○"
-            }
+            ${task.done ? "✓" : "○"}
 
             ${task.text}
             `;
+
+            const actions =
+                document.createElement(
+                    "div"
+                );
+
+            actions.className =
+                "archive-task-actions";
+
+            const restoreBtn =
+                document.createElement(
+                    "button"
+                );
+
+            restoreBtn.className =
+                "archive-action-btn";
+
+            restoreBtn.textContent =
+                "移回 Someday";
+
+            restoreBtn.addEventListener(
+
+                "click",
+
+                event=>{
+
+                    event.stopPropagation();
+
+                    collapseOut(
+
+                        item,
+
+                        ()=>{
+
+                            restoreSomedayTask(
+                                task.id
+                            );
+                        }
+                    );
+                }
+            );
+
+            const deleteBtn =
+                document.createElement(
+                    "button"
+                );
+
+            deleteBtn.className =
+                "archive-action-btn archive-action-danger";
+
+            deleteBtn.textContent =
+                "删除";
+
+            deleteBtn.addEventListener(
+
+                "click",
+
+                event=>{
+
+                    event.stopPropagation();
+
+                    collapseOut(
+
+                        item,
+
+                        ()=>{
+
+                            deleteSomedayArchiveTask(
+                                task.id
+                            );
+                        }
+                    );
+                }
+            );
+
+            actions.appendChild(
+                restoreBtn
+            );
+
+            actions.appendChild(
+                deleteBtn
+            );
+
+            item.appendChild(
+                text
+            );
+
+            item.appendChild(
+                actions
+            );
 
             archiveList
             .appendChild(
                 item
             );
         }
+    );
+}
+
+// -------------------------
+// 归档的 Someday：移回 / 删除
+// -------------------------
+
+function restoreSomedayTask(id){
+
+    const bucket =
+        somedayArchive();
+
+    const task =
+
+        bucket.find(
+
+            t =>
+
+            t.id === id
+        );
+
+    if(!task){
+
+        return;
+    }
+
+    task.done = false;
+
+    state.archive[SOMEDAY_ARCHIVE_KEY] =
+
+        bucket.filter(
+
+            t =>
+
+            t.id !== id
+        );
+
+    if(
+        !state.someday.some(
+
+            t =>
+
+            t.id === id
+        )
+    ){
+
+        state.someday.unshift(
+            task
+        );
+    }
+
+    saveState();
+
+    updateTodoInCloud(
+
+        id,
+
+        {
+            done: false
+        }
+    );
+
+    if(currentMode === "someday"){
+
+        renderTodos();
+    }
+
+    renderArchiveDay(
+        SOMEDAY_ARCHIVE_KEY
+    );
+}
+
+function deleteSomedayArchiveTask(id){
+
+    state.archive[SOMEDAY_ARCHIVE_KEY] =
+
+        somedayArchive()
+        .filter(
+
+            t =>
+
+            t.id !== id
+        );
+
+    saveState();
+
+    deleteTodoFromCloud(id);
+
+    renderArchiveDay(
+        SOMEDAY_ARCHIVE_KEY
     );
 }
 
@@ -2295,7 +4006,15 @@ renderTodos();
 
 renderArchive();
 
-loadTodosFromCloud();
+(async ()=>{
+
+    await loadProjectsFromCloud();
+
+    await loadTodosFromCloud();
+
+    renderTodos();
+
+})();
 
 scheduleNextDayReset();
 
